@@ -1,1 +1,7 @@
+/node_modules/
+/local
+/dist
+/public/build/
+.DS_Store
+/.idea
 /target
