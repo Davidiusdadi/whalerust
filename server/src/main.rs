@@ -1,6 +1,4 @@
-mod roam_dump;
-
-use roam_dump::{RoamBlock, RoamPage};
+use common::{RoamBlock, RoamPage};
 
 use std::{env, fs};
 use std::error::Error;
