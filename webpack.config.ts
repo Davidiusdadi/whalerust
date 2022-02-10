@@ -62,6 +62,9 @@ const isProduction = mode === 'production';
 const isDevelopment = !isProduction;
 
 const config: Configuration = {
+	experiments: {
+		asyncWebAssembly: true
+	},
 	mode: isProduction ? 'production' : 'development',
 	entry: {
 		bundle: [
@@ -167,6 +170,8 @@ const config: Configuration = {
 	},
 	devServer: {
 		hot: true,
+		host: '127.0.0.1',
+		static: ['public', 'dist/wasm32-unknown-unknown/release']
 	},
 	target: isDevelopment ? 'web' : 'browserslist',
 	plugins: [

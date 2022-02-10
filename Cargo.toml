@@ -2,5 +2,6 @@
 
 members = [
     "server",
-    "common"
+    "common",
+    "whale_rust_wasm"
 ]
