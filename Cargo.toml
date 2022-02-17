@@ -3,5 +3,6 @@
 members = [
     "server",
     "common",
-    "whale_rust_wasm"
+    "whale_rust_wasm",
+    "src-tauri"
 ]
