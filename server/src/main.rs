@@ -9,22 +9,22 @@ use std::process::{exit};
 use std::sync::Arc;
 use rocket::response::content;
 use rocket::State;
+use rocket::fs::FileServer;
 
 
 struct ServerState {
-    dump: Arc<Vec<RoamPage>>
+    dump: Arc<Vec<RoamPage>>,
 }
 
 
 #[get("/dump")]
-fn hello(state: &State<ServerState>) -> content::Json<String>  {
+fn route_dump(state: &State<ServerState>) -> content::Json<String> {
     let res = serde_json::to_string(&*state.dump);
 
     match res {
         Err(_) => {
-
             content::Json(String::from("[]"))
-        },
+        }
         Ok(r) => content::Json(r)
     }
 }
@@ -65,9 +65,24 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let state = ServerState { dump: Arc::new(dump) };
 
-    rocket::build()
-        .manage(state)
-        .mount("/", routes![hello])
+
+    let mut the_rocket = rocket::build()
+        .manage(state);
+
+    let node_env = env::var("NODE_ENV").unwrap_or("development".to_string());
+
+    if node_env == "development" {
+        println!("launching in development mode");
+        // dev builds serve /public via webpack dev-server
+        the_rocket = the_rocket.mount("/", routes![route_dump]);
+    } else {
+        println!("launching in production mode");
+        the_rocket = the_rocket
+            .mount("/api/", routes![route_dump])
+            .mount("/", FileServer::from("public"));
+    }
+
+    the_rocket
         .launch()
         .await.expect("failed to start server");
 
