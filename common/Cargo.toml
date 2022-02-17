@@ -7,4 +7,4 @@ edition = "2021"
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
-
+ts-rs = { version = "6.1", default-features = false }

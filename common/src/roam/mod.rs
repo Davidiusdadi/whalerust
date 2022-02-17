@@ -1,36 +1,47 @@
 
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
+#[derive(TS)]
+#[ts(export)]
 #[derive(Debug, Deserialize, Serialize)]
 pub struct RoamUser {
-    #[serde(rename = ":user/uid")]
+    #[serde(rename(deserialize=":user/uid"))]
     pub uid: String,
 }
 
+#[derive(TS)]
+#[ts(export)]
 #[derive(Debug, Deserialize, Serialize)]
 pub struct RoamBlockRef {
-    #[serde(rename = ":block/uid")]
+    #[serde(rename(deserialize=":block/uid"))]
     pub uid: String,
 }
 
+#[derive(TS)]
+#[ts(export)]
 #[derive(Debug, Deserialize, Serialize)]
 pub struct RoamRef {
     pub uid: String,
 }
 
+#[derive(TS)]
+#[ts(export)]
 #[derive(Debug, Deserialize, Serialize)]
 pub struct RoamBaseNode {
     pub uid: String,
-    #[serde(rename = "edit-time")]
+    #[serde(rename(deserialize="edit-time"))]
     pub edit_time: u64,
-    #[serde(rename = "create-time")]
+    #[serde(rename(deserialize="create-time"))]
     pub create_time: Option<u64>,
-    #[serde(rename = ":create/user")]
+    #[serde(rename(deserialize=":create/user"))]
     pub user_create: Option<RoamUser>,
-    #[serde(rename = ":edit/user")]
+    #[serde(rename(deserialize=":edit/user"))]
     pub user_edit: RoamUser,
 }
 
+#[derive(TS)]
+#[ts(export)]
 #[derive(Debug, Deserialize, Serialize)]
 pub struct RoamPage {
     #[serde(flatten)]
@@ -39,12 +50,14 @@ pub struct RoamPage {
     pub children: Option<Vec<RoamBlock>>,
 }
 
+#[derive(TS)]
+#[ts(export)]
 #[derive(Debug, Deserialize, Serialize)]
 pub struct RoamBlock {
     #[serde(flatten)]
     pub node: RoamBaseNode,
     pub string: String,
-    #[serde(rename = ":block/refs")]
+    #[serde(rename(deserialize=":block/refs"))]
     pub block_refs: Option<Vec<RoamBlockRef>>,
     pub refs: Option<Vec<RoamRef>>,
     pub children: Option<Vec<RoamBlock>>,
