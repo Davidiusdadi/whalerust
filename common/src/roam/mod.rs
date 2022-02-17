@@ -31,13 +31,13 @@ pub struct RoamRef {
 pub struct RoamBaseNode {
     pub uid: String,
     #[serde(rename(deserialize="edit-time"))]
-    pub edit_time: u64,
+    pub edit_time: Option<u64>,
     #[serde(rename(deserialize="create-time"))]
     pub create_time: Option<u64>,
     #[serde(rename(deserialize=":create/user"))]
     pub user_create: Option<RoamUser>,
     #[serde(rename(deserialize=":edit/user"))]
-    pub user_edit: RoamUser,
+    pub user_edit: Option<RoamUser>,
 }
 
 #[derive(TS)]
