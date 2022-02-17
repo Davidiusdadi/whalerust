@@ -10,14 +10,16 @@ install `cargo`, `yarn`, [tauri](https://tauri.studio/docs/getting-started/setti
 
 
 1. run `cargo test` (required for generating typescript bindings)
-2. run `cargo run --package server --bin main path/to/your/roam_dump.json` 
-3. run `yarn dev` to actual frontend (and proxying to the rust server)
+2. `wasm-pack build whale_rust_wasm/` 
+3. run `cargo run --package server --bin main path/to/your/roam_dump.json` 
+4. run `yarn dev` to actual frontend (and proxying to the rust server)
 
 
 ### tauri release
 
 ```
 yarn install
+wasm-pack build whale_rust_wasm/
 yarn build
 yarn tauri build
 ```
