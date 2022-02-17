@@ -14,19 +14,13 @@ use rocket::fs::FileServer;
 
 struct ServerState {
     dump: Arc<Vec<RoamPage>>,
+    dump_raw: String
 }
 
 
 #[get("/dump")]
 fn route_dump(state: &State<ServerState>) -> content::Json<String> {
-    let res = serde_json::to_string(&*state.dump);
-
-    match res {
-        Err(_) => {
-            content::Json(String::from("[]"))
-        }
-        Ok(r) => content::Json(r)
-    }
+    content::Json((*state.dump_raw).to_string())
 }
 
 #[rocket::main]
@@ -63,7 +57,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
-    let state = ServerState { dump: Arc::new(dump) };
+    let state = ServerState { dump: Arc::new(dump), dump_raw: contents };
 
 
     let mut the_rocket = rocket::build()
