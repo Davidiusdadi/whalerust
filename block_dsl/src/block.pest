@@ -1,0 +1,53 @@
+// example inputs:
+// nbasdbasbdia [[page]] aaa **bold** aaa __ital__ asdasd (( asdasd ))  asda [asd](aaaa) asdasd {{ aa }}  $$\some$$
+
+
+main = _{
+    SOI ~ (expression | plain)+ ~ EOI
+}
+
+expression = {
+  reference | formatted | invocation
+}
+
+
+formatted = _{ style_bold_full | style_italic_full }
+reference = _{ page_ref_full | block_ref_full | image | latex_full }
+
+
+helper_brackets =  _{  "[" | "]" | "(" | ")" | "{" | "}"}
+
+///red
+invocation = { "{{" ~ invocation_inner ~ "}}" }
+invocation_inner = { (!("{{" | "}}") ~ ANY)+ }
+
+/// black
+image = { "[" ~ image_label ~ "](" ~ image_target ~ ")" }
+
+image_label = { (!helper_brackets ~ ANY)+  }
+image_target = { (!helper_brackets ~ ANY)+ }
+
+
+/// red
+page_ref_full = _{ "[[" ~ page_ref ~ "]]" }
+page_ref = { (!("[[" | "]]") ~ ANY)+ }
+
+/// orange
+block_ref_full = _{ "((" ~ block_ref ~ "))" }
+block_ref = { (!( "((" | "))")~ ANY)+ }
+
+/// green
+style_bold_full = _{ "**" ~ style_bold_full ~ "**" }
+style_bold = { (!"**" ~ ANY)+ }
+
+/// white
+latex_full = _{ "$$\\" ~ latex ~ "$$" }
+latex = { (!"$$" ~ ANY)+ }
+
+/// black
+style_italic_full = _{ "__" ~ style_italic  ~ "__" }
+style_italic = { (!"__" ~ ANY)+ }
+
+
+/// blue
+plain = { (!expression ~ ANY)+ }
