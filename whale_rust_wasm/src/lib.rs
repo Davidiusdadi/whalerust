@@ -1,3 +1,4 @@
+#![feature(extern_types)]
 extern crate wasm_bindgen;
 extern crate console_error_panic_hook;
 
@@ -18,13 +19,30 @@ extern "C" {
     pub type RoamPageArray;
 }
 
-
 #[wasm_bindgen]
-pub fn parse_dump(json_contents: String) ->  RoamPageArray {
+pub fn parse_dump(json_contents: String) -> RoamPageArray {
     info!("calling parse_dump");
     let res = serde_json::from_str::<Vec<RoamPage>>(json_contents.as_str());
     let pages = res.unwrap();
     JsValue::from_serde(&pages).unwrap().unchecked_into::<RoamPageArray>()
+}
+
+#[wasm_bindgen(typescript_custom_section)]
+const TS_BLOCK_DSL_IMPORT: &'static str = r#"
+import { Token } from "../../block_dsl/bindings/Token"
+"#;
+
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(typescript_type = "Token[]")]
+    pub type BlockDSLToken;
+}
+
+#[wasm_bindgen]
+pub fn parse_block(block_contents: String) -> BlockDSLToken {
+    info!("calling block");
+    let tokens = block_dsl::parse_block(block_contents.as_str());
+    JsValue::from_serde(&tokens).unwrap().unchecked_into::<BlockDSLToken>()
 }
 
 #[wasm_bindgen]

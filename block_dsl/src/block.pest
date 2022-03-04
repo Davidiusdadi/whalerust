@@ -7,25 +7,25 @@ main = _{
 }
 
 expression = {
-  reference | formatted | invocation
+  reference | formatted | invocation_full
 }
 
 
 formatted = _{ style_bold_full | style_italic_full }
-reference = _{ page_ref_full | block_ref_full | image | latex_full }
+reference = _{ page_ref_full | block_ref_full | link | latex_full }
 
 
 helper_brackets =  _{  "[" | "]" | "(" | ")" | "{" | "}"}
 
 ///red
-invocation = { "{{" ~ invocation_inner ~ "}}" }
-invocation_inner = { (!("{{" | "}}") ~ ANY)+ }
+invocation_full = { "{{" ~ invocation ~ "}}" }
+invocation = { (!("{{" | "}}") ~ ANY)+ }
 
 /// black
-image = { "[" ~ image_label ~ "](" ~ image_target ~ ")" }
+link = { "[" ~ link_label ~ "](" ~ link_target ~ ")" }
 
-image_label = { (!helper_brackets ~ ANY)+  }
-image_target = { (!helper_brackets ~ ANY)+ }
+link_label = { (!helper_brackets ~ ANY)+  }
+link_target = { (!helper_brackets ~ ANY)+ }
 
 
 /// red
