@@ -40,7 +40,6 @@ extern "C" {
 
 #[wasm_bindgen]
 pub fn parse_block(block_contents: String) -> BlockDSLToken {
-    info!("calling block");
     let tokens = block_dsl::parse_block(block_contents.as_str());
     JsValue::from_serde(&tokens).unwrap().unchecked_into::<BlockDSLToken>()
 }

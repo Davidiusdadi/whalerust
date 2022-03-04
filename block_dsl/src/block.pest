@@ -3,51 +3,71 @@
 
 
 main = _{
-    SOI ~ (expression | plain)+ ~ EOI
+    SOI ~ (expression | plain)* ~ EOI
 }
 
 expression = {
-  reference | formatted | invocation_full
+  reference | formatted | invocation_full | code_embed_full
 }
 
 
-formatted = _{ style_bold_full | style_italic_full }
-reference = _{ page_ref_full | block_ref_full | link | latex_full }
+formatted = _{ style_bold_full | style_italic_full | highlight_full | code_inline_full }
+reference = _{ page_hash_ref_full | page_ref_full  | block_ref_full | link_full | image | latex_full }
 
 
 helper_brackets =  _{  "[" | "]" | "(" | ")" | "{" | "}"}
 
 ///red
-invocation_full = { "{{" ~ invocation ~ "}}" }
+invocation_full = _{ "{{" ~ invocation ~ "}}" }
 invocation = { (!("{{" | "}}") ~ ANY)+ }
 
 /// black
-link = { "[" ~ link_label ~ "](" ~ link_target ~ ")" }
-
+link_full = { "[" ~ link_label ~ "](" ~ link_target ~ ")" }
 link_label = { (!helper_brackets ~ ANY)+  }
 link_target = { (!helper_brackets ~ ANY)+ }
 
+image = _{ "![" ~ image_label ~ "](" ~ image_target ~ ")" }
+image_label = { (!helper_brackets ~ ANY)*  }
+image_target = { (!helper_brackets ~ ANY)+ }
 
-/// red
+
+
+
+code_embed_full = { "```" ~ ( code_embed_lang ~ (SPACE_SEPARATOR | NEWLINE))? ~ code_embed_content  ~ "```" }
+
+code_embed_lang = { ASCII_ALPHANUMERIC+  }
+code_embed_content = { (!"```" ~ ANY)+ }
+
+code_inline_full = _{ "`" ~ code_inline ~ "`"  }
+code_inline = { (!"`" ~ ANY)+ }
+
 page_ref_full = _{ "[[" ~ page_ref ~ "]]" }
 page_ref = { (!("[[" | "]]") ~ ANY)+ }
 
-/// orange
+page_hash_ref_full = _{ "#" ~ ( "[[" ~ page_hash_ref_long ~ "]]" | page_hash_ref_short ) }
+page_hash_ref_long = { (!("[[" | "]]") ~ ANY)+ }
+/// green
+page_hash_ref_short = { (!PATTERN_WHITE_SPACE ~ ANY)+ }
+
 block_ref_full = _{ "((" ~ block_ref ~ "))" }
 block_ref = { (!( "((" | "))")~ ANY)+ }
 
 /// green
-style_bold_full = _{ "**" ~ style_bold_full ~ "**" }
+style_bold_full = _{ "**" ~ style_bold ~ "**" }
 style_bold = { (!"**" ~ ANY)+ }
+
+strikethrough_full = _{ "~~" ~ strikethrough ~ "~~" }
+strikethrough = { (!"~~" ~ ANY)+ }
 
 /// white
 latex_full = _{ "$$\\" ~ latex ~ "$$" }
 latex = { (!"$$" ~ ANY)+ }
 
-/// black
 style_italic_full = _{ "__" ~ style_italic  ~ "__" }
 style_italic = { (!"__" ~ ANY)+ }
 
+highlight_full = _{ "^^" ~ highlight ~ "^^" }
+highlight = { (!"^^" ~ ANY)+ }
 
 /// blue
 plain = { (!expression ~ ANY)+ }

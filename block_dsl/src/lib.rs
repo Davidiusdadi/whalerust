@@ -2,7 +2,7 @@ extern crate pest;
 #[macro_use]
 extern crate pest_derive;
 
-use pest::iterators::Pairs;
+use pest::iterators::{Pair, Pairs};
 use pest::Parser;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
@@ -32,8 +32,6 @@ macro_rules! simple_type {
                 }
             }
     };
-
-
 }
 
 
@@ -50,8 +48,23 @@ simple_type!(Bold, {
     value: String
 });
 
-simple_type!(PageRef, {
+simple_type!(CodeInline, {
     value: String
+});
+
+
+#[derive(TS)]
+#[ts(export)]
+#[derive(Debug, Serialize, Deserialize)]
+pub enum PageRefFormat {
+    Normal,
+    HashTag,
+    HashRef,
+}
+
+simple_type!(PageRef, {
+    value: String,
+    format: PageRefFormat
 });
 
 simple_type!(Invocation, {
@@ -70,10 +83,27 @@ simple_type!(Latex, {
     value: String
 });
 
+simple_type!(Highlight, {
+    value: String
+});
+
+simple_type!(Strikethrough, {
+    value: String
+});
 
 simple_type!(Link, {
     label: String,
     target: String
+});
+
+simple_type!(Image, {
+    label: String,
+    target: String
+});
+
+simple_type!(CodeEmbed, {
+    lang: String,
+    contents: String
 });
 
 #[derive(TS)]
@@ -83,12 +113,17 @@ simple_type!(Link, {
 pub enum Token {
     Plain(Plain),
     Link(Link),
+    Image(Image),
     Bold(Bold),
     PageRef(PageRef),
     Invocation(Invocation),
     BlockRef(BlockRef),
     Italic(Italic),
     Latex(Latex),
+    Highlight(Highlight),
+    Strikethrough(Strikethrough),
+    CodeInline(CodeInline),
+    CodeEmbed(CodeEmbed),
 }
 
 
@@ -107,7 +142,15 @@ pub fn parse_block(block: &str) -> Vec<Token> {
             Rule::formatted => {}
             Rule::reference => {}
             Rule::helper_brackets => {}
-            Rule::invocation_full => {
+            Rule::invocation_full => {}
+            Rule::highlight_full => {}
+            Rule::highlight => {
+                let span = pair.as_span();
+                tokens.push(Highlight::make(
+                    span.start() as u32,
+                    span.end() as u32,
+                    span.as_str().to_string(),
+                ));
             }
             Rule::invocation => {
                 let span = pair.as_span();
@@ -117,7 +160,7 @@ pub fn parse_block(block: &str) -> Vec<Token> {
                     span.as_str().to_string(),
                 ));
             }
-            Rule::link => {
+            Rule::link_full => {
                 let span = pair.as_span();
                 let mut inner = pair.into_inner();
                 let label = inner.next().unwrap();
@@ -131,6 +174,66 @@ pub fn parse_block(block: &str) -> Vec<Token> {
             }
             Rule::link_label => {}
             Rule::link_target => {}
+            Rule::image => {
+                let span = pair.as_span();
+                let mut inner = pair.into_inner();
+                let label = inner.next().unwrap();
+                let link = inner.next().unwrap();
+                tokens.push(Image::make(
+                    span.start() as u32,
+                    span.end() as u32,
+                    label.as_span().as_str().to_string(),
+                    link.as_span().as_str().to_string(),
+                ));
+            }
+            Rule::image_label => {}
+            Rule::image_target => {}
+            Rule::code_embed_full => {
+                println!("see: {:?}", pair);
+
+                let span = pair.as_span();
+                let mut inner = pair.into_inner();
+                let lang;
+                let contents;
+                let first = inner.next().unwrap();
+                let second_opt = inner.next();
+                if second_opt.is_none() {
+                    lang = "unknown".to_string();
+                    contents = first.as_span().as_str().to_string();
+                } else {
+                    lang = first.as_span().as_str().to_string();
+                    contents = second_opt.unwrap().as_span().as_str().to_string();
+                }
+
+
+                tokens.push(CodeEmbed::make(
+                    span.start() as u32,
+                    span.end() as u32,
+                    lang,
+                    contents,
+                ));
+            }
+            Rule::code_embed_lang => {}
+            Rule::code_embed_content => {}
+            Rule::page_hash_ref_full => {}
+            Rule::page_hash_ref_long => {
+                let span = pair.as_span();
+                tokens.push(PageRef::make(
+                    span.start() as u32,
+                    span.end() as u32,
+                    span.as_str().to_string(),
+                    PageRefFormat::HashRef,
+                ));
+            }
+            Rule::page_hash_ref_short => {
+                let span = pair.as_span();
+                tokens.push(PageRef::make(
+                    span.start() as u32,
+                    span.end() as u32,
+                    span.as_str().to_string(),
+                    PageRefFormat::HashTag,
+                ));
+            }
             Rule::page_ref_full => {}
             Rule::page_ref => {
                 let span = pair.as_span();
@@ -138,6 +241,7 @@ pub fn parse_block(block: &str) -> Vec<Token> {
                     span.start() as u32,
                     span.end() as u32,
                     span.as_str().to_string(),
+                    PageRefFormat::Normal,
                 ));
             }
             Rule::block_ref_full => {}
@@ -153,6 +257,24 @@ pub fn parse_block(block: &str) -> Vec<Token> {
             Rule::style_bold => {
                 let span = pair.as_span();
                 tokens.push(Bold::make(
+                    span.start() as u32,
+                    span.end() as u32,
+                    span.as_str().to_string(),
+                ));
+            }
+            Rule::code_inline_full => {}
+            Rule::code_inline => {
+                let span = pair.as_span();
+                tokens.push(CodeInline::make(
+                    span.start() as u32,
+                    span.end() as u32,
+                    span.as_str().to_string(),
+                ));
+            }
+            Rule::strikethrough_full => {}
+            Rule::strikethrough => {
+                let span = pair.as_span();
+                tokens.push(Strikethrough::make(
                     span.start() as u32,
                     span.end() as u32,
                     span.as_str().to_string(),
@@ -191,6 +313,7 @@ pub fn parse_block(block: &str) -> Vec<Token> {
 
 #[cfg(test)]
 mod tests {
+    use pest::fails_with;
     use super::*;
 
     #[test]
@@ -207,5 +330,43 @@ mod tests {
         println!("{:?}", tokens);
         assert_eq!(tokens.len(), 3);
         assert!(matches!(tokens[2], Token::Link(_)));
+    }
+
+    #[test]
+    fn empty() {
+        let tokens = parse_block("");
+        assert_eq!(tokens.len(), 0);
+    }
+
+
+    #[test]
+    fn highlight_and_hash() {
+        let tokens = parse_block("^^Most of the machinery is complex to build and requires team-effort.^^ #signpost_inspiration");
+        println!("{:?}", tokens);
+        assert_eq!(tokens.len(), 3);
+    }
+
+    #[test]
+    fn code() {
+        let tokens = parse_block(r#"`hello` ```bash # bash comment ``` and ```cpp
+        //```"#);
+        println!("{:?}", tokens);
+        assert_eq!(tokens.len(), 5);
+        assert!(matches!(tokens[2], Token::CodeEmbed(_)));
+
+
+        if let Token::CodeEmbed(c) = &tokens[2] {
+            assert_eq!(c.lang, "bash");
+            assert_eq!(c.contents, "# bash comment ")
+        } else {
+            unreachable!()
+        }
+
+        if let Token::CodeEmbed(c) = &tokens[4] {
+            assert_eq!(c.lang, "cpp");
+            assert_eq!(c.contents, "        //")
+        } else {
+            unreachable!()
+        }
     }
 }
