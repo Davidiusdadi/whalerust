@@ -47,7 +47,6 @@ const svelteCheckInProduction = true;
 import Webpack from 'webpack';
 import WebpackDev from 'webpack-dev-server';
 import SveltePreprocess from 'svelte-preprocess';
-import Autoprefixer from 'autoprefixer';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import CSSMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import SvelteCheckPlugin from 'svelte-check-plugin';
@@ -98,7 +97,7 @@ const config: Configuration = {
                             // Dev mode must be enabled for HMR to work!
                             dev: isDevelopment
                         },
-                        emitCss: isProduction,
+                        emitCss: true,
                         hotReload: isDevelopment,
                         hotOptions: {
                             // List of options and defaults: https://www.npmjs.com/package/svelte-loader-hot#usage
@@ -108,11 +107,7 @@ const config: Configuration = {
                         preprocess: SveltePreprocess({
                             scss: true,
                             sass: true,
-                            postcss: {
-                                plugins: [
-                                    Autoprefixer
-                                ]
-                            } as any
+                            postcss: false
                         })
                     }
                 }
@@ -135,16 +130,6 @@ const config: Configuration = {
                         loader: MiniCssExtractPlugin.loader
                     },
                     'css-loader',
-                    {
-                        loader: 'postcss-loader',
-                        options: {
-                            postcssOptions: {
-                                plugins: [
-                                    Autoprefixer
-                                ]
-                            }
-                        }
-                    },
                     'sass-loader'
                 ]
             },
@@ -157,9 +142,9 @@ const config: Configuration = {
                         loader: MiniCssExtractPlugin.loader
                     },
                     'css-loader',
+                    'postcss-loader'
                 ]
             },
-
             // Rule: TypeScript
             {
                 test: /\.ts$/,

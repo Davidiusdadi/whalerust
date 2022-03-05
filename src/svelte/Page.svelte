@@ -5,8 +5,8 @@
     export let page: RoamPage
 </script>
 
-<div>
-    <h2>{page.title}</h2>
+<div class="border-2">
+    <h2 class="text-3xl font-bold underline">{page.title}</h2>
     <ul>
         {#if page.children}
             {#each page.children as child}
