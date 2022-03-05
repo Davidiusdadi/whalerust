@@ -1,8 +1,8 @@
-<script lang="ts">
+<script lang='ts'>
     import * as rust from '../whale_rust_wasm/pkg'
     import type {} from '../whale_rust_wasm/pkg'
-    import {RoamPage} from "../common/bindings/RoamPage"
-    import Page from "src/svelte/Page.svelte"
+    import { RoamPage } from '../common/bindings/RoamPage'
+    import Page from 'src/svelte/Page.svelte'
 
     rust.init()
 
@@ -27,9 +27,9 @@
 
     let fileinput: HTMLInputElement
     const onFileSelected = (e) => {
-        let image = e.target.files[0];
-        let reader = new FileReader();
-        reader.readAsText(image);
+        let image = e.target.files[0]
+        let reader = new FileReader()
+        reader.readAsText(image)
         reader.onload = e => {
             data = rust.parse_dump(e.target.result.toString())
         }
@@ -39,18 +39,18 @@
 <main>
 
     <div on:click={()=>{fileinput.click();}}>Open dump file.</div>
-    <input style="display:none" type="file" accept=".json" on:change={(e)=>onFileSelected(e)}
+    <input style='display:none' type='file' accept='.json' on:change={(e)=>onFileSelected(e)}
            bind:this={fileinput}>
     <hr>
     <ul>
         {#each data as page}
             <li>
-                <Page page="{page}"/>
+                <Page page='{page}' />
             </li>
         {/each}
     </ul>
 </main>
 
-<style lang="scss">
+<style lang='scss'>
 
 </style>

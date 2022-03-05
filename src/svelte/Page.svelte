@@ -10,7 +10,7 @@
     <ul>
         {#if page.children}
             {#each page.children as child}
-                <Block block="{child}"/>
+                <Block block='{child}' />
             {/each}
         {/if}
     </ul>

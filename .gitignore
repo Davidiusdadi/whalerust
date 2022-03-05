@@ -5,5 +5,5 @@
 .DS_Store
 /.idea
 /target
-bindings/*.ts
+**/bindings/*.ts
 *.log
