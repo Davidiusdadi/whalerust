@@ -7,7 +7,7 @@
     let tokens = parse_block(block.string ?? "");
 </script>
 
-<li>
+<li class="ml-3">
     {#each tokens as t}
         {#if t.type === "Bold"}
             <span class="bold">{t.value}</span>
@@ -15,7 +15,7 @@
             <span class="italic">{t.value}</span>
         {:else if t.type === "Strikethrough"}
             <span class="strikethrough">{t.value}</span>
-        {:else if t.type === "Highlight"}`
+        {:else if t.type === "Highlight"}
             <span class="highlight">{t.value}</span>
         {:else if t.type === "CodeInline"}
             <code>{t.value}</code>
@@ -59,7 +59,7 @@
     {/each}
 
     {#if block.children}
-        <ul>
+        <ul class="list-disc ml-3">
             {#each block.children as child}
                 <svelte:self block={child} />
             {/each}

@@ -5,9 +5,9 @@
     export let page: RoamPage
 </script>
 
-<div class="border-2">
-    <h2 class="text-3xl font-bold underline shadow-lg shadow-cyan-500/50">{page.title}</h2>
-    <ul>
+<div class="border-10">
+    <h2 class="text-3xl font-bold mb-5">{page.title}</h2>
+    <ul class="list-disc m-5 bg-slate-100">
         {#if page.children}
             {#each page.children as child}
                 <Block block='{child}' />
