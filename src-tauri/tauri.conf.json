@@ -49,12 +49,10 @@
     "updater": {
       "active": false
     },
-    "allowlist": {
-      "all": false
-    },
+    "allowlist": {},
     "windows": [
       {
-        "title": "Roam Dump Viewer",
+        "title": "WhaleRust",
         "width": 800,
         "height": 600,
         "resizable": true,

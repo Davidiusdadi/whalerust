@@ -13,6 +13,7 @@ install `cargo`, `yarn`, [tauri](https://tauri.studio/docs/getting-started/setti
 2. `wasm-pack build whale_rust_wasm/` 
 3. run `cargo run --package server --bin main path/to/your/roam_dump.json` 
 4. run `yarn dev` to actual frontend (and proxying to the rust server)
+5. run `yarn tauri dev`  (while `yarn dev` is running)
 
 
 ### tauri release

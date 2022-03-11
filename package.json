@@ -49,6 +49,7 @@
 		"webpack-dev-server": "^4.7.3"
 	},
 	"dependencies": {
+		"@tauri-apps/api": "^1.0.0-rc.2",
 		"serve": "^13.0.2"
 	},
 	"browserslist": [
