@@ -1053,7 +1053,7 @@
 
 "@codemirror/lang-markdown@git+https://github.com/Davidiusdadi/lang-markdown.git":
   version "0.19.6"
-  resolved "git+https://github.com/Davidiusdadi/lang-markdown.git#fa2b51164dbad56f1a7cc7fff6e228929ed44501"
+  resolved "git+https://github.com/Davidiusdadi/lang-markdown.git#b774367d4a68ff28aca07402c277aaa66969cd1f"
   dependencies:
     "@codemirror/highlight" "^0.19.0"
     "@codemirror/lang-html" "^0.19.0"
@@ -1061,7 +1061,7 @@
     "@codemirror/state" "^0.19.3"
     "@codemirror/view" "^0.19.0"
     "@lezer/common" "^0.15.0"
-    "@lezer/markdown" "^0.15.0"
+    "@lezer/markdown" "git+https://github.com/Davidiusdadi/markdown.git"
 
 "@codemirror/language@^0.19.0":
   version "0.19.8"
@@ -1220,10 +1220,9 @@
   dependencies:
     "@lezer/common" "^0.15.0"
 
-"@lezer/markdown@^0.15.0", "@lezer/markdown@^0.15.5":
+"@lezer/markdown@git+https://github.com/Davidiusdadi/markdown.git":
   version "0.15.5"
-  resolved "https://registry.yarnpkg.com/@lezer/markdown/-/markdown-0.15.5.tgz#0e9ef3e44b452cf0a0f7cd11a4d4ca0ca180a4d2"
-  integrity sha512-ZWCZn1FTQFw70RZFmyWRKHsKYTw8OTPc1SmYWMf6xwz83SNd/MIlXcOoyLLwE3/THfUMmnnSjj2ozfPtqA3mFg==
+  resolved "git+https://github.com/Davidiusdadi/markdown.git#43c6e0da9da3881c4075c993eb8b50d006536aff"
   dependencies:
     "@lezer/common" "^0.15.0"
 

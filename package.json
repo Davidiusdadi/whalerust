@@ -9,7 +9,8 @@
 		"build": "cargo test && cross-env NODE_ENV=production webpack",
 		"dev": "webpack serve",
 		"start": "serve public --listen 8080",
-		"validate": "svelte-check"
+		"validate": "svelte-check",
+		"postinstall": "./postinstall.sh"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.12.17",
@@ -55,7 +56,7 @@
 	"dependencies": {
 		"@codemirror/basic-setup": "^0.19.1",
 		"@codemirror/lang-markdown": "git+https://github.com/Davidiusdadi/lang-markdown.git",
-		"@lezer/markdown": "^0.15.5",
+		"@lezer/markdown": "git+https://github.com/Davidiusdadi/markdown.git",
 		"@tauri-apps/api": "^1.0.0-rc.2",
 		"serve": "^13.0.2"
 	},
