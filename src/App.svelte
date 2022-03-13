@@ -1,5 +1,4 @@
 <script lang='ts'>
-    import type {} from '../whale_rust_wasm/pkg'
     import Editor from 'src/svelte/Editor.svelte'
     import loadRoamData from 'src/db/roam-loader'
     import { File } from 'src/db/file'
@@ -27,6 +26,13 @@
         onUserFileSelected(files[0] || null)
     }
 
+    function setFiles(_files: File[]) {
+        files = _files.sort((a, b) => {
+            return b.date - a.date // desc
+        });
+        (window as any).files = files // 4 debug purposes
+    }
+
     onLoadUrl(url_input_value)
 
     function onLoadRoamDump(e) {
@@ -34,7 +40,7 @@
         let reader = new FileReader()
         reader.readAsText(image)
         reader.onload = (e) => {
-            files = loadRoamData(e.target.result.toString())
+            setFiles(loadRoamData(e.target.result.toString()))
             onLoadFinished()
         }
     }
@@ -44,7 +50,7 @@
         boostrap_via_server_dump(url_input_value)
             .then((loaded_files) => {
                 localStorage.setItem(URL_LOCAL_STORAGE_KEY, url_input_value)
-                files = loaded_files
+                setFiles(loaded_files)
             })
             .catch((e) => {
                 files = []
@@ -90,6 +96,7 @@
                 {#each files as file}
                     <li>
                         <button
+                            title='last update: {file.getLastModified()}'
                             on:click={() => onUserFileSelected(file)}
                             type='button'
                             class='m-1 px-2 py-1 text-slate-300 font-thin text-xs text-left'

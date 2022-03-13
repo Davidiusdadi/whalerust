@@ -13,7 +13,8 @@ export default function loadRoamData(roam_raw_data: string): File[] {
     return pages.map(p => {
         return new File(
             `${p.title}.md`,
-            '# ' + p.title + '\n' + (p.children?.map(map_child).join('') ?? '')
+            '# ' + p.title + '\n' + (p.children?.map(map_child).join('') ?? ''),
+            Number(p.edit_time)
         )
     })
 }
