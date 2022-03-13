@@ -1,8 +1,9 @@
-import { MarkdownConfig, parser } from '@lezer/markdown'
+import { MarkdownConfig, parser, GFM, Subscript, Emoji, Superscript } from '@lezer/markdown'
 import { styleTags, tags as t } from '@codemirror/highlight'
 
-const BO = 91 /* [ */
-const BC = 93 /* ] */
+const BO = 91 /* [  bracket open */
+const BC = 93 /* ] bracken close */
+// our custom extension (that currently ONLY works because the forked/modified @lezer/markdown and @lezer/lang-markdown )
 export const WikiLink: MarkdownConfig = {
     defineNodes: ['WikiLink', 'WikiLinkMarkStart', 'WikiLinkMarkEnd'],
     parseInline: [{
@@ -33,6 +34,24 @@ export const WikiLink: MarkdownConfig = {
     ]
 }
 
-export const whalerust_parser = parser.configure([
-    WikiLink
-])
+export const extensions = [GFM, Subscript, Superscript, Emoji, WikiLink]
+
+//  based on @lezer/lang-markdown cofiguration
+const extended = parser.configure([...extensions, {
+    props: [
+        styleTags({
+            'TableDelimiter SubscriptMark SuperscriptMark StrikethroughMark': t.processingInstruction,
+            'TableHeader/...': t.heading,
+            'Strikethrough/...': t.strikethrough,
+            TaskMarker: t.atom,
+            Task: t.list,
+            Emoji: t.character,
+            'Subscript Superscript': t.special(t.content),
+            TableCell: t.content
+        })
+    ]
+}])
+
+
+export default extensions
+export const whalerust_parser = parser.configure(extensions)

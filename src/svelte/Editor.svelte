@@ -1,6 +1,6 @@
 <script lang='ts'>
     import { onMount } from 'svelte'
-    import Editor from '../lang'
+    import Editor from '../lang/editor'
     import { EditorView } from '@codemirror/basic-setup'
 
     export let content: string

@@ -14,8 +14,8 @@ import { defaultHighlightStyle } from '@codemirror/highlight'
 import { lintKeymap } from '@codemirror/lint'
 import { EditorState, EditorView } from '@codemirror/basic-setup'
 import { indentWithTab } from '@codemirror/commands'
-import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
-import { WikiLink } from '../lang/parser'
+import { markdown, commonmarkLanguage } from '@codemirror/lang-markdown'
+import { extensions as markdown_extensions} from '../lang/parser'
 
 
 const basicSetup = [
@@ -48,8 +48,8 @@ const basicSetup = [
 ]
 
 const markdown_lang = markdown({
-    base: markdownLanguage,
-    extensions: [WikiLink]
+    base: commonmarkLanguage,
+    extensions: markdown_extensions
 })
 
 
