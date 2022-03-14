@@ -13,12 +13,16 @@
     let url_input_value: string = localStorage.getItem(URL_LOCAL_STORAGE_KEY) || '/api/dump'
 
     function onUserFileSelected(f: File | null) {
-        console.log(`file selected: ${f.name}`)
+
         { // drop editor and reload with new file
             file = null
-            setTimeout(() => {
-                file = f
-            }, 0)
+            if (f) {
+                console.log(`file selected: ${f.full_name}`)
+                setTimeout(() => {
+                    file = f
+                }, 0)
+            }
+
         }
     }
 
@@ -35,12 +39,20 @@
 
     onLoadUrl(url_input_value)
 
-    function onLoadRoamDump(e) {
-        let image = e.target.files[0]
+    function onLocalFileSelected(e: Event) {
+        const target = e.target as HTMLInputElement | null
+        let selected_file = target?.files?.[0]
+
+        if (!selected_file) {
+            console.log('no file selected')
+            return
+        }
+
         let reader = new FileReader()
-        reader.readAsText(image)
-        reader.onload = (e) => {
-            setFiles(loadRoamData(e.target.result.toString()))
+        reader.readAsText(selected_file)
+        reader.onload = (e: ProgressEvent<FileReader>) => {
+            const file_content = e.target!.result!.toString()
+            setFiles(loadRoamData(file_content))
             onLoadFinished()
         }
     }
@@ -55,7 +67,8 @@
             .catch((e) => {
                 files = []
                 console.error(`opening failed: ${url}\n error: ${e.toString()}`)
-            }).finally(onLoadFinished)
+            })
+            .finally(onLoadFinished)
     }
 
 
@@ -76,7 +89,7 @@
                 style='display:none'
                 type='file'
                 accept='.json'
-                on:change={(e) => onLoadRoamDump(e)}
+                on:change={(e) => onLocalFileSelected(e)}
                 bind:this={dom_file_input}
             />
         </div>
@@ -100,7 +113,7 @@
                             on:click={() => onUserFileSelected(file)}
                             type='button'
                             class='m-1 px-2 py-1 text-slate-300 font-thin text-xs text-left'
-                        >{file.name}</button
+                        >{file.full_name}</button
                         >
                     </li>
                 {/each}

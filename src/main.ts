@@ -3,7 +3,7 @@ import App from './App.svelte'
 
 import * as rwasm from '../whale_rust_wasm/pkg'
 
-window['rwasm'] = rwasm // for convenience / debuggability
+(window as any).rwasm = rwasm // for convenience / debuggability
 
 
 import { invoke } from '@tauri-apps/api/tauri'

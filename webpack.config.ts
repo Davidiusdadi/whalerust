@@ -5,13 +5,13 @@
  *
  * Browserslist documentation: https://github.com/browserslist/browserslist#browserslist-
  */
-const useBabel = true;
+const useBabel = true
 
 /**
  * This option controls whether or not development builds should be compiled with Babel. Change this to `true` if you
  * intend to test with older browsers during development, but it could significantly impact your build speed.
  */
-const useBabelInDevelopment = false;
+const useBabelInDevelopment = false
 
 /**
  * Define paths to any stylesheets you wish to include at the top of the CSS bundle. Any styles compiled from svelte
@@ -20,45 +20,45 @@ const useBabelInDevelopment = false;
  */
 const stylesheets = [
     './src/styles/index.scss'
-];
+]
 
 /**
  * Change this to `true` to generate source maps alongside your production bundle. This is useful for debugging, but
  * will increase total bundle size and expose your source code.
  */
-const sourceMapsInProduction = false;
+const sourceMapsInProduction = false
 
 /**
  * Change this to `true` to run svelte-check during hot reloads. This will impact build speeds but will show more
  * thorough errors and warnings.
  */
-const svelteCheckInDevelopment = true;
+const svelteCheckInDevelopment = true
 
 /**
  * Change this to `false` to disable svelte-check during production builds. Build speeds will be faster, but error
  * and warning checks will be less thorough.
  */
-const svelteCheckInProduction = true;
+const svelteCheckInProduction = true
 
 /*********************************************************************************************************************/
 /**********                                             Webpack                                             **********/
 /*********************************************************************************************************************/
 
-import Webpack from 'webpack';
-import WebpackDev from 'webpack-dev-server';
-import SveltePreprocess from 'svelte-preprocess';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import CSSMinimizerPlugin from 'css-minimizer-webpack-plugin';
-import SvelteCheckPlugin from 'svelte-check-plugin';
+import Webpack from 'webpack'
+import WebpackDev from 'webpack-dev-server'
+import SveltePreprocess from 'svelte-preprocess'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import CSSMinimizerPlugin from 'css-minimizer-webpack-plugin'
+import SvelteCheckPlugin from 'svelte-check-plugin'
 
-import {CleanWebpackPlugin} from 'clean-webpack-plugin';
+import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 
-import fs from 'fs';
-import path from 'path';
+import fs from 'fs'
+import path from 'path'
 
-const mode = process.env.NODE_ENV ?? 'development';
-const isProduction = mode === 'production';
-const isDevelopment = !isProduction;
+const mode = process.env.NODE_ENV ?? 'development'
+const isProduction = mode === 'production'
+const isDevelopment = !isProduction
 
 const config: Configuration = {
     experiments: {
@@ -102,7 +102,7 @@ const config: Configuration = {
                         hotOptions: {
                             // List of options and defaults: https://www.npmjs.com/package/svelte-loader-hot#usage
                             noPreserveState: false,
-                            optimistic: true,
+                            optimistic: true
                         },
                         preprocess: SveltePreprocess({
                             scss: true,
@@ -160,7 +160,7 @@ const config: Configuration = {
         proxy: {
             '/api': {
                 target: 'http://localhost:8000',
-                pathRewrite: {'^/api': ''},
+                pathRewrite: { '^/api': '' }
             }
         }
     },
@@ -179,7 +179,7 @@ const config: Configuration = {
         assets: true,
         entrypoints: false
     }
-};
+}
 
 /**
  * This interface combines configuration from `webpack` and `webpack-dev-server`. You can add or override properties
@@ -196,7 +196,7 @@ export interface Configuration extends Webpack.Configuration, WebpackDev.Configu
 // Configuration for production bundles
 if (isProduction) {
     // Clean the build directory for production builds
-    config.plugins?.push(new CleanWebpackPlugin());
+    config.plugins?.push(new CleanWebpackPlugin())
 
     // Minify CSS files
     config.optimization?.minimizer?.push(
@@ -206,43 +206,45 @@ if (isProduction) {
                 preset: [
                     'default',
                     {
-                        discardComments: {removeAll: !sourceMapsInProduction},
-                    },
-                ],
-            },
+                        discardComments: { removeAll: !sourceMapsInProduction }
+                    }
+                ]
+            }
         })
-    );
+    )
 
     // Minify and treeshake JS
     if (config.optimization === undefined) {
-        config.optimization = {};
+        config.optimization = {}
     }
 
-    config.optimization.minimize = true;
+    config.optimization.minimize = true
 }
 
 // Parse as JSON5 to add support for comments in tsconfig.json parsing.
-require('require-json5').replace();
+require('require-json5').replace()
 
 // Load path aliases from the tsconfig.json file
-const tsconfigPath = path.resolve(__dirname, 'tsconfig.json');
-const tsconfig = fs.existsSync(tsconfigPath) ? require(tsconfigPath) : {};
+const tsconfigPath = path.resolve(__dirname, 'tsconfig.json')
+const tsconfig = fs.existsSync(tsconfigPath) ? require(tsconfigPath) : {}
 
 if ('compilerOptions' in tsconfig && 'paths' in tsconfig.compilerOptions) {
-    const aliases = tsconfig.compilerOptions.paths;
+    const aliases = tsconfig.compilerOptions.paths
 
     for (const alias in aliases) {
-        const paths = aliases[alias].map((p: string) => path.resolve(__dirname, p));
+        const paths = aliases[alias].map((p: string) => path.resolve(__dirname, p))
 
         // Our tsconfig uses glob path formats, whereas webpack just wants directories
         // We'll need to transform the glob format into a format acceptable to webpack
 
-        const wpAlias = alias.replace(/([\\/])\*$/, '');
-        const wpPaths = paths.map((p: string) => p.replace(/([\\/])\*$/, ''));
+        const wpAlias = alias.replace(/([\\/])\*$/, '')
+        const wpPaths = paths.map((p: string) => p.replace(/([\\/])\*$/, ''))
 
         if (config.resolve && config.resolve.alias) {
             if (!(wpAlias in config.resolve.alias) && wpPaths.length) {
-                config.resolve.alias[wpAlias] = wpPaths.length > 1 ? wpPaths : wpPaths[0];
+                type ALIAS_TYPE = {[name: string]: string | false | string[]}
+                const alias = config.resolve.alias;
+                (alias as Extract<typeof alias, ALIAS_TYPE> )[wpAlias] = wpPaths.length > 1 ? wpPaths : wpPaths[0]
             }
         }
     }
@@ -260,16 +262,16 @@ if (useBabel && (isProduction || useBabelInDevelopment)) {
                     '@babel/preset-env',
                     {
                         debug: false,
-                        corejs: {version: 3},
+                        corejs: { version: 3 },
                         useBuiltIns: 'usage'
                     }
                 ]
             ],
             plugins: ['@babel/plugin-transform-runtime']
         }
-    };
+    }
 
-    config.module?.rules.unshift({
+    config.module?.rules!.unshift({
         test: /\.(?:m?js|ts)$/,
         include: [
             path.resolve(__dirname, 'src'),
@@ -278,28 +280,28 @@ if (useBabel && (isProduction || useBabelInDevelopment)) {
         exclude: [
             /node_modules[/\\](css-loader|core-js|webpack|regenerator-runtime)/
         ],
-        use: loader,
-    });
+        use: loader
+    })
 
-    const svelte = config.module?.rules.find(rule => {
-        if (typeof rule !== 'object') return false;
+    const svelte = config.module?.rules!.find(rule => {
+        if (typeof rule !== 'object') return false
         else if (Array.isArray(rule.use))
-            return rule.use.includes((e: any) => typeof e.loader === 'string' && e.loader.startsWith('svelte-loader'));
+            return rule.use.includes((e: any) => typeof e.loader === 'string' && e.loader.startsWith('svelte-loader'))
         else if (typeof rule.use === 'object')
-            return rule.use.loader?.startsWith('svelte-loader') ?? false;
-        return false;
-    }) as Webpack.RuleSetRule;
+            return rule.use.loader?.startsWith('svelte-loader') ?? false
+        return false
+    }) as Webpack.RuleSetRule
 
     if (!svelte) {
-        console.error('ERR: Could not find svelte-loader for babel injection!');
-        process.exit(1);
+        console.error('ERR: Could not find svelte-loader for babel injection!')
+        process.exit(1)
     }
 
     if (!Array.isArray(svelte.use)) {
-        svelte.use = [svelte.use as any];
+        svelte.use = [svelte.use as any]
     }
 
-    svelte.use.unshift(loader);
+    svelte.use.unshift(loader)
 }
 
-export default config;
+export default config

@@ -1,7 +1,16 @@
 export class File {
-    name: string
+    private name: string
     content: string
     date: number
+
+
+    get full_name() {
+        return this.name
+    }
+
+    get name_short() {
+        return this.name.replace(/\.[^.]+$/, '')
+    }
 
     getLastModified() {
         return new Date(this.date).toLocaleDateString()
