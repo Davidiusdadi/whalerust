@@ -5294,6 +5294,11 @@ svelte-loader@^3.0.0:
     svelte-dev-helper "^1.1.9"
     svelte-hmr "^0.14.2"
 
+svelte-material-icons@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/svelte-material-icons/-/svelte-material-icons-2.0.0.tgz#b7de985d7a455b22c233aa6b107b58c2af8d00ed"
+  integrity sha512-ws1gW3YPciCSTqE4f/OXBYk7lBqOZXqyxguJdmhBmuOwHFhwwXWF/Ye2WjgXeMcIO1cKwtbX56vNjf9uQC8gqw==
+
 svelte-preprocess@^4.0.0:
   version "4.10.2"
   resolved "https://registry.yarnpkg.com/svelte-preprocess/-/svelte-preprocess-4.10.2.tgz#2405689e57161916947b8360679051a56eddd5c6"

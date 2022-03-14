@@ -58,7 +58,8 @@
 		"@codemirror/lang-markdown": "git+https://github.com/Davidiusdadi/lang-markdown.git",
 		"@lezer/markdown": "git+https://github.com/Davidiusdadi/markdown.git",
 		"@tauri-apps/api": "^1.0.0-rc.2",
-		"serve": "^13.0.2"
+		"serve": "^13.0.2",
+		"svelte-material-icons": "^2.0.0"
 	},
 	"browserslist": [
 		"defaults"
