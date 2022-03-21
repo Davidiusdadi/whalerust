@@ -1,5 +1,22 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+body, html {
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.cm-editor .cm-content {
+    font-family: 'Inter', sans-serif;
+    font-size: 1em;
+    line-height: 1.5em;
+}
+
 // disable editor outline
 .ͼ1.cm-editor.cm-focused {
     outline: none;
+}
+
+.ͼ4 .cm-line{
+    padding: 4px 2px 4px 2px !important;
 }

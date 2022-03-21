@@ -21,14 +21,14 @@ import { Index } from 'src/db/indexer'
 
 
 const basicSetup = [
-    lineNumbers(),
-    highlightActiveLineGutter(),
-    highlightSpecialChars(),
+    //lineNumbers(),
+    //highlightActiveLineGutter(),
+    //highlightSpecialChars(),
     history(),
-    foldGutter(),
+    //foldGutter(),
     drawSelection(),
     dropCursor(),
-    EditorState.allowMultipleSelections.of(true),
+    EditorState.allowMultipleSelections.of(false),
     indentOnInput(),
     defaultHighlightStyle.fallback,
     bracketMatching(),
