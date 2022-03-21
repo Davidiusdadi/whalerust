@@ -2,8 +2,8 @@
 	"name": "whalerust",
 	"private": true,
 	"engines": {
-		"node": "14.16.1",
-		"yarn": "1.22.17"
+		"node": "~14",
+		"yarn": "~1"
 	},
 	"scripts": {
 		"build": "cargo test && cross-env NODE_ENV=production webpack",
