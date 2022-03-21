@@ -16,5 +16,5 @@
 
 </script>
 
-<div class='editor-wrapper' bind:this={editor_div}>
+<div class='editor-wrapper flex' bind:this={editor_div}>
 </div>

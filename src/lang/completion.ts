@@ -13,6 +13,8 @@ export default function(index: Index) {
         let start_of_suggest: number
         let end_of_suggest: number
 
+        console.log('cursor at:', nodeBefore.type.name)
+
         if (nodeBefore.type.name === NodeNames.WikiLinkMarkStart) {
             if (nodeBefore.to !== context.pos) {
                 return null // cursor not at the end of [[

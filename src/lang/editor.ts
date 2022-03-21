@@ -18,6 +18,7 @@ import { markdown, commonmarkLanguage } from '@codemirror/lang-markdown'
 import { extensions as markdown_extensions } from '../lang/parser'
 import completion from 'src/lang/completion'
 import { Index } from 'src/db/indexer'
+import { ListMarkDecorationPlugin } from 'src/lang/decorations/list'
 
 
 const basicSetup = [
@@ -75,7 +76,8 @@ export default (editor_div: Element, content: string, index: Index) => {
                     override: [
                         completion(index).wiki_complete
                     ]
-                })
+                }),
+                ListMarkDecorationPlugin
             ]
         }),
         parent: editor_div
