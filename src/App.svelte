@@ -85,7 +85,8 @@
     }
 </script>
 
-<svelte:window on:keydown={(e) => { is_url_dialog_open = is_url_dialog_open ? e.keyCode !== 27 : is_url_dialog_open } }/>
+<svelte:window
+    on:keydown={(e) => { is_url_dialog_open = is_url_dialog_open ? e.keyCode !== 27 : is_url_dialog_open } } />
 
 <div class='flex flex-col'>
     <header class='wr-uploader flex flex-row'>
@@ -153,7 +154,7 @@
             </div>
         </div>
     </header>
-    <main class='flex flex-row'>
+    <main class='flex flex-row items-start'>
         <div class='wr-sidebar bg-slate-800'>
             <ul class='p-5'>
                 {#each files as file}
@@ -169,14 +170,10 @@
                 {/each}
             </ul>
         </div>
-        <div class='wr-page-container '>
-            <ul class='p-5'>
-                {#if file}
-                    <li>
-                        <Editor content={file.content} />
-                    </li>
-                {/if}
-            </ul>
+        <div class='wr-page-container flex'>
+            {#if file}
+                <Editor content={file.content} index='{index}' />
+            {/if}
         </div>
     </main>
 </div>

@@ -1,6 +1,14 @@
 import { MarkdownConfig, parser, GFM, Subscript, Emoji, Superscript } from '@lezer/markdown'
 import { styleTags, tags as t } from '@codemirror/highlight'
 
+
+export const NodeNames = {
+    'WikiLink': 'WikiLink',
+    'WikiLinkMarkStart': 'WikiLinkMarkStart',
+    'WikiLinkMarkEnd': 'WikiLinkMarkEnd'
+}
+
+
 const BO = 91 /* [  bracket open */
 const BC = 93 /* ] bracken close */
 // our custom extension (that currently ONLY works because the forked/modified @lezer/markdown and @lezer/lang-markdown )

@@ -15,7 +15,9 @@ import { lintKeymap } from '@codemirror/lint'
 import { EditorState, EditorView } from '@codemirror/basic-setup'
 import { indentWithTab } from '@codemirror/commands'
 import { markdown, commonmarkLanguage } from '@codemirror/lang-markdown'
-import { extensions as markdown_extensions} from '../lang/parser'
+import { extensions as markdown_extensions } from '../lang/parser'
+import completion from 'src/lang/completion'
+import { Index } from 'src/db/indexer'
 
 
 const basicSetup = [
@@ -31,7 +33,7 @@ const basicSetup = [
     defaultHighlightStyle.fallback,
     bracketMatching(),
     closeBrackets(),
-    autocompletion(),
+
     rectangularSelection(),
     highlightActiveLine(),
     highlightSelectionMatches(),
@@ -44,7 +46,9 @@ const basicSetup = [
         ...commentKeymap,
         ...completionKeymap,
         ...lintKeymap
-    ])
+    ]),
+    // consider indent aware line warp https://gist.github.com/dralletje/058fe51415fe7dbac4709a65c615b52e
+    EditorView.lineWrapping
 ]
 
 const markdown_lang = markdown({
@@ -53,14 +57,25 @@ const markdown_lang = markdown({
 })
 
 
-export default (editor_div: Element, content: string) => {
+const fixedHeightEditor = EditorView.theme({
+    '&': { height: '80vh' },
+    '.cm-scroller': { overflow: 'auto' }
+})
+
+export default (editor_div: Element, content: string, index: Index) => {
     return new EditorView({
         state: EditorState.create({
             doc: content,
             extensions: [
                 basicSetup,
                 keymap.of([indentWithTab]),
-                markdown_lang
+                markdown_lang,
+                fixedHeightEditor,
+                autocompletion({
+                    override: [
+                        completion(index).wiki_complete
+                    ]
+                })
             ]
         }),
         parent: editor_div
