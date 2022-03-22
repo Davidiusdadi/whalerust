@@ -1,5 +1,5 @@
-import { File } from 'src/db/file'
-import { NodeNames, whalerust_parser } from 'src/lang/parser'
+import { File } from './file'
+import { NodeNames, whalerust_parser } from '../lang/parser'
 
 class FileRef {
     readonly from: string

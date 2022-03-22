@@ -1,8 +1,8 @@
 import { Completion, CompletionContext, CompletionResult } from '@codemirror/autocomplete'
 import { syntaxTree } from '@codemirror/language'
 import { SyntaxNode } from '@lezer/common'
-import { NodeNames } from 'src/lang/parser'
-import { Index } from 'src/db/indexer'
+import { NodeNames } from './parser'
+import { Index } from '../db/indexer'
 
 
 export default function(index: Index) {

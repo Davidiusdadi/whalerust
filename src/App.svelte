@@ -1,9 +1,9 @@
 <script lang='ts'>
-    import Editor from 'src/svelte/Editor.svelte'
-    import loadRoamData from 'src/db/roam-loader'
-    import { File } from 'src/db/file'
-    import { boostrap_via_server_dump } from 'src/store/boostrap'
-    import { Index } from 'src/db/indexer'
+    import Editor from './svelte/Editor.svelte'
+    import loadRoamData from './db/roam-loader'
+    import { File } from './db/file'
+    import { boostrap_via_server_dump } from './store/boostrap'
+    import { Index } from './db/indexer'
     import IconFolderPlus from 'svelte-material-icons/FolderPlus.svelte'
     import LinkPlus from 'svelte-material-icons/LinkPlus.svelte'
     import WindowClose from 'svelte-material-icons/WindowClose.svelte'
@@ -73,9 +73,9 @@
 
         let reader = new FileReader()
         reader.readAsText(selected_file)
-        reader.onload = (e: ProgressEvent<FileReader>) => {
+        reader.onload = async (e: ProgressEvent<FileReader>) => {
             const file_content = e.target!.result!.toString()
-            setFiles(loadRoamData(file_content))
+            setFiles(await loadRoamData(file_content))
             onLoadFinished()
         }
     }

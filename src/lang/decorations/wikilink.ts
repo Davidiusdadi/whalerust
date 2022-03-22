@@ -1,6 +1,6 @@
 import { Decoration, DecorationSet, EditorView, PluginValue, Range, ViewPlugin, ViewUpdate } from '@codemirror/view'
 import { syntaxTree } from '@codemirror/language'
-import { NodeNames } from 'src/lang/parser'
+import { NodeNames } from '../parser'
 
 
 function WikiLinkDecoration(view: EditorView) {

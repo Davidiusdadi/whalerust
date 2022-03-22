@@ -1,4 +1,4 @@
-import loadRoamData from 'src/db/roam-loader'
+import loadRoamData from '../db/roam-loader'
 
 
 export const boostrap_via_server_dump = async (url: string) => {

@@ -16,10 +16,10 @@ import { EditorState, EditorView } from '@codemirror/basic-setup'
 import { indentWithTab } from '@codemirror/commands'
 import { markdown, commonmarkLanguage } from '@codemirror/lang-markdown'
 import { extensions as markdown_extensions } from '../lang/parser'
-import completion from 'src/lang/completion'
-import { Index } from 'src/db/indexer'
-import { ListMarkDecorationPlugin } from 'src/lang/decorations/list'
-import { WikiLinkDecorationPlugin } from 'src/lang/decorations/wikilink'
+import completion from './completion'
+import { Index } from '../db/indexer'
+import { ListMarkDecorationPlugin } from './decorations/list'
+import { WikiLinkDecorationPlugin } from './decorations/wikilink'
 
 
 const basicSetup = [

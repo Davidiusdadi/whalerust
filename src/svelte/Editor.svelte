@@ -1,9 +1,9 @@
 <script lang='ts'>
     import { onMount } from 'svelte'
-    import { File } from 'src/db/file'
+    import { File } from '../db/file'
     import Editor from '../lang/editor'
     import { EditorView } from '@codemirror/basic-setup'
-    import { Index } from 'src/db/indexer'
+    import { Index } from '../db/indexer'
 
     export let file: File
     export let index: Index
