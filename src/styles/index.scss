@@ -25,3 +25,11 @@ body, html {
         content: '•';
     }
 }
+
+// holds the name of a page that can be navigated to
+[x-data-target] {
+    cursor: pointer;
+    &:hover {
+        text-decoration: underline;
+    }
+}

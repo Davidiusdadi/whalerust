@@ -18,8 +18,18 @@
     let index: Index = new Index()
 
     let dom_file_input: HTMLInputElement
-    let url_input_value: string =
-        localStorage.getItem(URL_LOCAL_STORAGE_KEY) || '/api/dump'
+
+    let url_input_value = localStorage.getItem(URL_LOCAL_STORAGE_KEY) ?? '/api/dump'
+
+    function manifestFile(name: string) {
+        let file = files.find((f) => f.name_short === name)
+        if (!file) { // lazy manifest page
+            file = new File(`${name}.md`, ` # ${name} (new)`)
+            files.push(file)
+            index.addFile(file)
+        }
+        onUserFileSelected(file)
+    }
 
     function onUserFileSelected(f: File | null) {
         {
@@ -170,9 +180,9 @@
                 {/each}
             </ul>
         </div>
-        <div class='wr-page-container flex'>
+        <div class='wr-page-container flex pl-5'>
             {#if file}
-                <Editor content={file.content} index='{index}' />
+                <Editor file={file} index='{index}' open_page='{manifestFile}' />
             {/if}
         </div>
     </main>

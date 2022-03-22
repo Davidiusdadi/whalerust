@@ -18,6 +18,17 @@ export class Index {
     constructor() {
     }
 
+    getBackLinks(file: File) {
+        const file_name = file.name_short
+        const refs: FileRef[] = []
+        for (const ref of this.page_refs.values()) {
+            if (ref.to === file_name) {
+                refs.push(ref)
+            }
+        }
+        return refs
+    }
+
     addFile(file: File) {
         this.pages.add(file)
         const tree = whalerust_parser.parse(file.content)

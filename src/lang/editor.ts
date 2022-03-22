@@ -19,6 +19,7 @@ import { extensions as markdown_extensions } from '../lang/parser'
 import completion from 'src/lang/completion'
 import { Index } from 'src/db/indexer'
 import { ListMarkDecorationPlugin } from 'src/lang/decorations/list'
+import { WikiLinkDecorationPlugin } from 'src/lang/decorations/wikilink'
 
 
 const basicSetup = [
@@ -77,7 +78,8 @@ export default (editor_div: Element, content: string, index: Index) => {
                         completion(index).wiki_complete
                     ]
                 }),
-                ListMarkDecorationPlugin
+                ListMarkDecorationPlugin,
+                WikiLinkDecorationPlugin
             ]
         }),
         parent: editor_div

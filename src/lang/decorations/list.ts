@@ -1,12 +1,9 @@
-import { WidgetType } from '@codemirror/view'
+import { PluginValue, WidgetType } from '@codemirror/view'
 import { EditorView, Decoration, Range } from '@codemirror/view'
 import { syntaxTree } from '@codemirror/language'
 import { ViewUpdate, ViewPlugin, DecorationSet } from '@codemirror/view'
 
 class ListMarkWidget extends WidgetType {
-    constructor(readonly checked: boolean) {
-        super()
-    }
 
     eq(_widget: WidgetType): boolean {
         return true
@@ -34,7 +31,7 @@ function ListMarkDecoration(view: EditorView) {
                 if (type.name == 'ListMark' && (to - from) === 1) {
                     let isTrue = view.state.doc.sliceString(from, to) == 'true'
                     let deco = Decoration.replace({
-                        widget: new ListMarkWidget(isTrue),
+                        widget: new ListMarkWidget(),
                         block: false,
                         inclusive: false,
                         inclusiveEnd: false,
@@ -49,7 +46,7 @@ function ListMarkDecoration(view: EditorView) {
 }
 
 
-export const ListMarkDecorationPlugin = ViewPlugin.fromClass(class {
+export const ListMarkDecorationPlugin = ViewPlugin.fromClass(class ListMarkDecorationPluginCLS implements PluginValue {
     decorations: DecorationSet
 
     constructor(view: EditorView) {
