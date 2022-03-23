@@ -2,6 +2,7 @@ import { File } from 'src/db/file'
 import { Index } from 'src/db/indexer'
 import { boostrap_via_server_dump } from 'src/store/boostrap'
 import { readable, get } from 'svelte/store'
+import type { Source } from 'src/db/file_source'
 
 const URL_LOCAL_STORAGE_KEY = 'roam_dump_json_url'
 
@@ -53,11 +54,15 @@ export function onLoadUrl(url: string) {
         })
 }
 
-export function manifestFile(name: string) {
+export function manifestFile(source: Source, name: string) {
     const _files = get(files)
     let file = _files.find((f) => f.name_short === name)
     if (!file) { // lazy manifest page
-        file = new File(`${name}.md`, ` # ${name} (new)`)
+        file = new File({
+            source,
+            name: `${name}.md`,
+            content: `# ${name}`
+        })
         _files.push(file)
         update_files(_files)
         index.addFile(file)

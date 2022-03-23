@@ -45,7 +45,7 @@
         </div>
         <div class='wr-page-container flex pl-5'>
             {#if dislayed_file}
-                <Editor file={dislayed_file} index='{index}' open_page='{manifestFile}' />
+                <Editor file={dislayed_file} index='{index}' />
             {/if}
         </div>
     </main>

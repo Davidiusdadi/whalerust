@@ -5,6 +5,9 @@
     import { size } from '../store/defaults'
     import loadRoamData from 'src/db/roam-loader'
     import { setFiles, onLoadUrl } from 'src/store/core'
+    import loadMdData from 'src/db/markdown-loader'
+    import { Source } from 'src/db/file_source'
+    import type { File } from 'src/db/file'
 
     let url_input_value: string = ''
     let is_url_dialog_open = false
@@ -20,12 +23,28 @@
             return
         }
 
+        let loader: (content: string) => File[]
+        const file_name = selected_file.name
+        const source = new Source(file_name)
+        if (selected_file.name.toLowerCase().endsWith('.json')) {
+            loader = (c: string) => {
+                return loadRoamData(source, c)
+            }
+        } else if (selected_file.name.toLowerCase().endsWith('.md')) {
+            loader = (c: string) => loadMdData(source, file_name, c)
+        } else {
+            console.error(``)
+            return
+        }
+
         let reader = new FileReader()
         reader.readAsText(selected_file)
         reader.onload = (e: ProgressEvent<FileReader>) => {
             const file_content = e.target!.result!.toString()
-            setFiles(loadRoamData(file_content))
+            setFiles(loader(file_content))
         }
+
+
     }
 
 
@@ -46,7 +65,7 @@
             <input
                 style='display:none'
                 type='file'
-                accept='.json'
+                accept='*.json, *.md'
                 on:change={(e) => onLocalFileSelected(e)}
                 bind:this={dom_file_input}
             />

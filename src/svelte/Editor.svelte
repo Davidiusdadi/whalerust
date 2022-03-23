@@ -1,19 +1,22 @@
-<script lang="ts">
+<script lang='ts'>
     import { onMount } from 'svelte'
     import type { File } from 'src/db/file'
     import Editor from '../lang/editor'
     import type { EditorView } from '@codemirror/basic-setup'
     import type { Index } from 'src/db/indexer'
+    import { manifestFile } from 'src/store/core'
 
     export let file: File
     export let index: Index
-    export let open_page: (page: string) => void
+
+    function open_page(name: string) {
+        manifestFile(file.source, name)
+    }
 
     let editor_div: HTMLDivElement
     let editor: EditorView
 
     const backrefs = index.getBackLinks(file)
-
     let editor_container: HTMLElement
 
     onMount(() => {
@@ -35,10 +38,10 @@
 </script>
 
 <div bind:this={editor_container}>
-    <div class="editor-wrapper flex" bind:this={editor_div} />
+    <div class='editor-wrapper flex' bind:this={editor_div} />
     <div>
-        <div class="text-lg text-gray-400 cursor-pointer">Backlinks</div>
-        <ul class="list-disc pl-5">
+        <div class='text-lg text-gray-400 cursor-pointer'>Backlinks</div>
+        <ul class='list-disc pl-5'>
             {#each backrefs as ref}
                 <li on:click={() => open_page(ref.from)}>
                     {ref.from}

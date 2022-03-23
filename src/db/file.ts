@@ -1,7 +1,10 @@
+import type { Source } from 'src/db/file_source'
+
 export class File {
-    private name: string
-    content: string
-    date: number
+    readonly name: string
+    readonly source: Source
+    readonly content: string
+    readonly date: number
 
 
     get full_name() {
@@ -16,9 +19,15 @@ export class File {
         return new Date(this.date).toLocaleDateString()
     }
 
-    constructor(name: string, content: string, date = Date.now()) {
+    constructor({ name, content, date, source }: {
+        name: string,
+        content: string,
+        source: Source,
+        date?: number
+    }) {
         this.name = name
         this.content = content
-        this.date = date
+        this.date = date ?? Date.now()
+        this.source = source
     }
 }
