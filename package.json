@@ -9,13 +9,12 @@
 		"build": "cargo test && wp --config webpack.config.js --mode production",
 		"dev": "wp --config webpack.config.js --mode development",
 		"start": "cargo run --package server --bin main",
-		"validate": "svelte-check",
-		"postinstall": "./postinstall.sh"
+		"validate": "svelte-check"
 	},
 	"devDependencies": {
 		"@codemirror/basic-setup": "^0.19.1",
-		"@codemirror/lang-markdown": "git+https://github.com/Davidiusdadi/lang-markdown.git",
-		"@lezer/markdown": "git+https://github.com/Davidiusdadi/markdown.git",
+		"@codemirror/lang-markdown": "git+https://github.com/Davidiusdadi/lang-markdown.git#pre-build",
+		"@lezer/markdown": "git+https://github.com/Davidiusdadi/markdown.git#pre-build",
 		"@tauri-apps/api": "^1.0.0-rc.2",
 		"@tsconfig/svelte": "^1.0.10",
 		"@types/chai": "^4.3.0",
