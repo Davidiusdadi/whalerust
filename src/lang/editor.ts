@@ -17,7 +17,7 @@ import { indentWithTab } from '@codemirror/commands'
 import { markdown, commonmarkLanguage } from '@codemirror/lang-markdown'
 import { extensions as markdown_extensions } from '../lang/parser'
 import completion from 'src/lang/completion'
-import { Index } from 'src/db/indexer'
+import type { Index } from 'src/db/indexer'
 import { ListMarkDecorationPlugin } from 'src/lang/decorations/list'
 import { WikiLinkDecorationPlugin } from 'src/lang/decorations/wikilink'
 

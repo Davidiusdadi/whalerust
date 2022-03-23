@@ -1,4 +1,4 @@
-import { File } from 'src/db/file'
+import type { File } from 'src/db/file'
 import { NodeNames, whalerust_parser } from 'src/lang/parser'
 
 class FileRef {

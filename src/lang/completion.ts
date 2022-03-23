@@ -1,13 +1,13 @@
-import { Completion, CompletionContext, CompletionResult } from '@codemirror/autocomplete'
+import type { Completion, CompletionContext, CompletionResult } from '@codemirror/autocomplete'
 import { syntaxTree } from '@codemirror/language'
-import { SyntaxNode } from '@lezer/common'
+import type { SyntaxNode } from '@lezer/common'
 import { NodeNames } from 'src/lang/parser'
-import { Index } from 'src/db/indexer'
+import type { Index } from 'src/db/indexer'
 
 
 export default function(index: Index) {
     function wiki_complete(context: CompletionContext): CompletionResult | null | Promise<CompletionResult | null> {
-        let nodeBefore = syntaxTree(context.state).resolveInner(context.pos, -1) as SyntaxNode
+        const nodeBefore = syntaxTree(context.state).resolveInner(context.pos, -1) as SyntaxNode
 
         let suggest_by: string
         let start_of_suggest: number
