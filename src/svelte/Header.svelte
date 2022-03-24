@@ -2,6 +2,7 @@
     import IconFolderPlus from 'svelte-material-icons/FolderPlus.svelte'
     import LinkPlus from 'svelte-material-icons/LinkPlus.svelte'
     import Dialog from './Dialog.svelte'
+    import Finder from './Finder.svelte'
     import { size } from '../store/defaults'
     import loadRoamData from 'src/db/roam-loader'
     import { setFiles, onLoadUrl } from 'src/store/core'
@@ -77,7 +78,7 @@
                 class='bg-slate-500 p-2 m-2 rounded-md hover:bg-slate-400'
             >
                 <LinkPlus {size} />
-                <Dialog bind:is_url_dialog_open='{is_url_dialog_open}'>
+                <Dialog bind:show='{is_url_dialog_open}'>
                     <div class='p-5'>
                         <div class=''>
                             <div class='flex-grow flex'>
@@ -101,5 +102,6 @@
                 </Dialog>
             </button>
         </div>
+        <Finder />
     </div>
 </header>

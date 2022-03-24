@@ -29,7 +29,6 @@ export function setFiles(_files: File[]) {
     })
     new_files.forEach((f) => index.addFile(f))
     update_files(new_files)
-    index = new Index()
 
     if (is_files_init && _files.length > 0) {
         update_file(_files[0])
@@ -67,10 +66,32 @@ export function manifestFile(source: Source, name: string) {
         update_files(_files)
         index.addFile(file)
     }
+    return file
 }
 
 export function onUserFileSelected(f: File) {
     update_file(f)
+}
+
+export interface FileSuggestion {
+    file: File,
+}
+
+export function suggest(query: string): FileSuggestion[] {
+    const max_res = 20
+    const regex = new RegExp(`${query}`, 'i')
+    const results: FileSuggestion[] = []
+    for (const file of index.pages) {
+        if (file.name_short.match(regex)) {
+            results.push({
+                file
+            })
+            if (results.length >= max_res) {
+                break
+            }
+        }
+    }
+    return results
 }
 
 
