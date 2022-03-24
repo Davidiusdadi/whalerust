@@ -11,7 +11,7 @@ body, html {
     line-height: 1.5em;
 }
 
-// disable editor outline
+/* disable editor outline */
 .ͼ1.cm-editor.cm-focused {
     outline: none;
 }
@@ -20,16 +20,25 @@ body, html {
     padding: 4px 2px 4px 2px !important;
 }
 
-.wr-list-mark-decoration {
-    &::after {
-        content: '•';
+.wr-list-mark-decoration::after {
+    content: '•';
+}
+@tailwind base;
+
+@layer base {
+    h1 {
+        @apply text-2xl;
     }
 }
 
-// holds the name of a page that can be navigated to
+/* @tailwind components; */
+@tailwind utilities;
+
+
+/* holds the name of a page that can be navigated to */
 [x-data-target] {
     cursor: pointer;
-    &:hover {
-        text-decoration: underline;
-    }
+}
+[x-data-target]:hover {
+    text-decoration: underline;
 }

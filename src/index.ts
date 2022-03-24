@@ -1,4 +1,4 @@
-import './styles/tailwind.css'
+import 'src/styles/main.css'
 import App from './App.svelte'
 
 import * as rwasm from '../whale_rust_wasm/pkg'
