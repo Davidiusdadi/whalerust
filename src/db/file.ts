@@ -1,18 +1,15 @@
 import type { Source } from 'src/db/file_source'
 
 export class File {
-    readonly name: string
     readonly source: Source
+    readonly name: string
     readonly content: string
     readonly date: number
 
+    readonly name_short: string
 
     get full_name() {
         return this.name
-    }
-
-    get name_short() {
-        return this.name.replace(/\.[^.]+$/, '')
     }
 
     getLastModified() {
@@ -29,5 +26,6 @@ export class File {
         this.content = content
         this.date = date ?? Date.now()
         this.source = source
+        this.name_short = this.name.replace(/\.[^.]+$/, '')
     }
 }
