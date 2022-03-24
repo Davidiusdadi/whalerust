@@ -2,7 +2,7 @@
     import Magnify from 'svelte-material-icons/Magnify.svelte'
     import { size } from 'src/store/defaults'
     import Dialog from 'src/svelte/Dialog.svelte'
-    import { suggest } from 'src/store/core'
+    import { onUserFileSelected, suggest } from 'src/store/core'
 
     let show = false
     let dom_input: HTMLInputElement
@@ -46,7 +46,11 @@
                 <ul class='list-disc'>
                     {#each suggestions as suggestion}
                         <li>
-                            {suggestion.file.name_short}
+                            <button
+                                on:click={() => onUserFileSelected(suggestion.file)}
+                            >
+                                {suggestion.file.name_short}
+                            </button>
                         </li>
                     {/each}
                 </ul>
