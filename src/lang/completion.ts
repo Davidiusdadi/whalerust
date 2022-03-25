@@ -3,6 +3,9 @@ import { syntaxTree } from '@codemirror/language'
 import type { SyntaxNode } from '@lezer/common'
 import { NodeNames } from 'src/lang/parser'
 import type { Index } from 'src/db/indexer'
+import type { TransactionSpec } from '@codemirror/state'
+import { EditorSelection } from '@codemirror/state'
+import { pickedCompletion } from '@codemirror/autocomplete'
 
 
 export default function(index: Index) {
@@ -44,7 +47,18 @@ export default function(index: Index) {
                 if (ref.name_short.toLowerCase().startsWith(suggest_by)) {
                     options.push({
                         label: ref.name_short,
-                        type: 'variable'
+                        type: 'variable',
+                        apply: (ev, c: Completion, from: number, to: number) => {
+                            const replacement = c.label
+                            const new_cursor = from + replacement.length + 2 // skip closing brackets: ]]
+                            ev.dispatch({
+                                changes: {
+                                    from, to, insert: replacement
+                                },
+                                selection: EditorSelection.cursor(new_cursor),
+                                annotations: pickedCompletion.of(c)
+                            })
+                        }
                     })
                 }
             }
