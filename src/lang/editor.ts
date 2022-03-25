@@ -61,7 +61,6 @@ const markdown_lang = markdown({
 
 
 const fixedHeightEditor = EditorView.theme({
-    '&': { height: '80vh' },
     '.cm-scroller': { overflow: 'auto' }
 })
 

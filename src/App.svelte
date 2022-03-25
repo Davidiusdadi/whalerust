@@ -27,23 +27,8 @@
 
 <div class='flex flex-col'>
     <Header/>
-    <main class='flex flex-row items-start'>
-        <div class='wr-sidebar bg-slate-800'>
-            <ul class='p-5'>
-                {#each $files as file}
-                    <li>
-                        <button
-                            title='last update: {file.getLastModified()}'
-                            on:click={() => onUserFileSelected(file)}
-                            type='button'
-                            class='m-1 px-2 py-1 text-slate-300 font-thin text-xs text-left'
-                        >{file.full_name}</button
-                        >
-                    </li>
-                {/each}
-            </ul>
-        </div>
-        <div class='wr-page-container flex pl-5'>
+    <main class='wr-main-doc flex lg:w-[700px] lg:m-auto'>
+        <div class='wr-page-container flex flex-grow pl-5'>
             {#if dislayed_file}
                 <Editor file={dislayed_file} index='{index}' />
             {/if}

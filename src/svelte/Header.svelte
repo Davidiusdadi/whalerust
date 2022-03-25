@@ -44,11 +44,7 @@
             const file_content = e.target!.result!.toString()
             setFiles(loader(file_content))
         }
-
-
     }
-
-
 </script>
 
 <header class='wr-uploader flex flex-row'>
@@ -93,6 +89,7 @@
                         </div>
                         <div class='flex justify-end'>
                             <button
+                                title='ctrl-o'
                                 class='bg-slate-500 p-2 m-2 rounded-md hover:bg-slate-400'
                                 on:click|self|stopPropagation={() => { is_url_dialog_open = false; onLoadUrl(url_input_value) }}
                             >Load Url

@@ -38,8 +38,8 @@
     })
 </script>
 
-<div bind:this={editor_container}>
-    <div class='editor-wrapper flex' bind:this={editor_div} />
+<div bind:this={editor_container} class='flex-grow'>
+    <div class='editor-wrapper' bind:this={editor_div} />
     <div>
         <div class='text-lg text-gray-400 cursor-pointer'>Backlinks</div>
         <ul class='list-disc pl-5'>
