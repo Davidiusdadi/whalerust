@@ -10,12 +10,12 @@ import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
 import { autocompletion, completionKeymap } from '@codemirror/autocomplete'
 import { commentKeymap } from '@codemirror/comment'
 import { rectangularSelection } from '@codemirror/rectangular-selection'
-import { defaultHighlightStyle } from '@codemirror/highlight'
+import { defaultHighlightStyle, HighlightStyle, classHighlightStyle } from '@codemirror/highlight'
 import { lintKeymap } from '@codemirror/lint'
 import { EditorState, EditorView } from '@codemirror/basic-setup'
 import { indentWithTab } from '@codemirror/commands'
 import { markdown, commonmarkLanguage } from '@codemirror/lang-markdown'
-import { extensions as markdown_extensions } from '../lang/parser'
+import { extensions as markdown_extensions, tags } from '../lang/parser'
 import completion from 'src/lang/completion'
 import type { Index } from 'src/db/indexer'
 import { ListMarkDecorationPlugin } from 'src/lang/decorations/list'
@@ -32,6 +32,7 @@ const basicSetup = [
     dropCursor(),
     EditorState.allowMultipleSelections.of(false),
     indentOnInput(),
+    classHighlightStyle,
     defaultHighlightStyle.fallback,
     bracketMatching(),
     closeBrackets(),
@@ -64,6 +65,16 @@ const fixedHeightEditor = EditorView.theme({
     '.cm-scroller': { overflow: 'auto' }
 })
 
+const myHighlightStyle = HighlightStyle.define([
+    { tag: tags.heading1, 'font-size': '2em' },
+    { tag: tags.heading2, 'font-size': '1.5em' },
+    { tag: tags.heading3, 'font-size': '1.3em' },
+    {tag: tags.processingInstruction, 'color': 'gray', opacity: '0.5'},
+    {tag: tags.link, 'color': '#0077be'},
+    {tag: tags.strong, 'font-weight': 'bold'},
+    {tag: tags.emphasis, 'font-style': 'italic'}
+])
+
 export default (editor_div: Element, content: string, index: Index) => {
     return new EditorView({
         state: EditorState.create({
@@ -79,7 +90,8 @@ export default (editor_div: Element, content: string, index: Index) => {
                     ]
                 }),
                 ListMarkDecorationPlugin,
-                WikiLinkDecorationPlugin
+                WikiLinkDecorationPlugin,
+                myHighlightStyle
             ]
         }),
         parent: editor_div

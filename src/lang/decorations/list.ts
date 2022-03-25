@@ -10,7 +10,7 @@ class ListMarkWidget extends WidgetType {
     }
 
     toDOM() {
-        let wrap = document.createElement('span')
+        const wrap = document.createElement('span')
         wrap.setAttribute('aria-hidden', 'true')
         wrap.className = 'wr-list-mark-decoration'
         return wrap
@@ -23,14 +23,14 @@ class ListMarkWidget extends WidgetType {
 
 
 function ListMarkDecoration(view: EditorView) {
-    let widgets: Range<Decoration>[] = []
-    for (let { from, to } of view.visibleRanges) {
+    const widgets: Range<Decoration>[] = []
+    for (const { from, to } of view.visibleRanges) {
         syntaxTree(view.state).iterate({
             from, to,
             enter: (type, from, to) => {
                 if (type.name == 'ListMark' && (to - from) === 1) {
-                    let isTrue = view.state.doc.sliceString(from, to) == 'true'
-                    let deco = Decoration.replace({
+                    const isTrue = view.state.doc.sliceString(from, to) == 'true'
+                    const deco = Decoration.replace({
                         widget: new ListMarkWidget(),
                         block: false,
                         inclusive: false,
