@@ -3,10 +3,11 @@ import type { RoamBlock } from '../../common/bindings/RoamBlock'
 import * as rust from '../../whale_rust_wasm/pkg'
 import { File } from 'src/db/file'
 import type { Source } from 'src/db/file_source'
+import { tabSize } from 'src/store/defaults'
 
 export default function loadRoamData(source: Source, roam_raw_data: string): File[] {
     const map_child = (b: RoamBlock, level = 0): string => {
-        const own = `${' '.repeat(level * 2)}- ${b.string}\n`
+        const own = `${' '.repeat(level * tabSize)}- ${b.string}\n`
         return own + (b.children?.map((c) => map_child(c, level + 1)).join('\n') ?? '')
     }
 

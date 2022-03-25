@@ -20,6 +20,8 @@ import completion from 'src/lang/completion'
 import type { Index } from 'src/db/indexer'
 import { ListMarkDecorationPlugin } from 'src/lang/decorations/list'
 import { WikiLinkDecorationPlugin } from 'src/lang/decorations/wikilink'
+import { indentUnit } from '@codemirror/language'
+import { tabSize } from 'src/store/defaults'
 
 
 const basicSetup = [
@@ -75,11 +77,13 @@ const myHighlightStyle = HighlightStyle.define([
 ])
 
 export default (editor_div: Element, content: string, index: Index) => {
-    return new EditorView({
+    const editor = new EditorView({
         state: EditorState.create({
             doc: content,
             extensions: [
                 basicSetup,
+                indentUnit.of(' '.repeat(tabSize)),
+                EditorState.tabSize.of(tabSize),
                 keymap.of([indentWithTab]),
                 markdown_lang,
                 fixedHeightEditor,
@@ -95,4 +99,5 @@ export default (editor_div: Element, content: string, index: Index) => {
         }),
         parent: editor_div
     })
+    return editor
 }
