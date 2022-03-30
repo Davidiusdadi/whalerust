@@ -4,16 +4,35 @@ import { NodeNames } from 'src/lang/parser'
 
 
 function WikiLinkDecoration(view: EditorView) {
-    let widgets: Range<Decoration>[] = []
-    for (let { from, to } of view.visibleRanges) {
+    const widgets: Range<Decoration>[] = []
+    for (const { from, to } of view.visibleRanges) {
         syntaxTree(view.state).iterate({
             from, to,
             enter: (type, from, to) => {
                 if (type.name == NodeNames.WikiLink) {
-                    let deco = Decoration.mark({
+                    const deco = Decoration.mark({
                         attributes: {
                             'x-data-target': view.state.doc.sliceString(from + 2, to - 2)
                         }
+                    })
+                    widgets.push(deco.range(from, to))
+                } else if (type.name === NodeNames.HashText) {
+                    const deco = Decoration.mark({
+                        attributes: {
+                            'x-data-target': view.state.doc.sliceString(from, to)
+                        }
+                    })
+                    widgets.push(deco.range(from - 1, to)) // include the leading #
+                } else if (type.name === NodeNames.InlineURL) {
+                    const href = view.state.doc.sliceString(from, to)
+                    const deco = Decoration.mark({
+                        tagName: 'a',
+                        attributes: {
+                            href,
+                            target:"_blank",
+                            role:"link",
+                            title: `open: ${href}`
+                        },
                     })
                     widgets.push(deco.range(from, to))
                 }

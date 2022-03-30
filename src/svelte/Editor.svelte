@@ -24,11 +24,19 @@
         editor_container.addEventListener('click', (e) => {
             console.log('click event: ', e)
             const t = e.target
+
             if (t instanceof HTMLElement) {
                 let x_data_target = t.getAttribute('x-data-target')
-                if (!x_data_target && t.parentElement) {
-                    x_data_target = t.parentElement.getAttribute('x-data-target')
+                if (t.parentElement) {
+                    if (t.parentElement instanceof HTMLAnchorElement) {
+                        window.open(t.parentElement.href, t.parentElement.target)
+                    }
+                    if (!x_data_target) {
+                        x_data_target = t.parentElement.getAttribute('x-data-target')
+                    }
                 }
+
+
                 if (x_data_target) {
                     console.log(`click on ${x_data_target}`)
                     open_page(x_data_target)

@@ -5,7 +5,9 @@ import { styleTags, tags as t, Tag } from '@codemirror/highlight'
 export const NodeNames = {
     'WikiLink': 'WikiLink',
     'WikiLinkMarkStart': 'WikiLinkMarkStart',
-    'WikiLinkMarkEnd': 'WikiLinkMarkEnd'
+    'WikiLinkMarkEnd': 'WikiLinkMarkEnd',
+    'InlineURL': 'InlineURL',
+    'HashText': 'HashText'
 }
 
 const BO = 91 /* [  bracket open */

@@ -36,9 +36,9 @@ body, html {
 
 
 /* holds the name of a page that can be navigated to */
-[x-data-target] {
+[x-data-target], a[href] {
     cursor: pointer;
 }
-[x-data-target]:hover {
+[x-data-target]:hover, a[href] {
     text-decoration: underline;
 }
