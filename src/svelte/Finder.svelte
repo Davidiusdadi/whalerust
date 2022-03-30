@@ -32,7 +32,7 @@
     <button class='bg-slate-500 p-2 m-2 rounded-md hover:bg-slate-400' on:click={() => show = true}>
         <Magnify {size} />
 
-        <Dialog bind:show='{show}'>
+        <Dialog bind:show='{show}' dialog_class='justify-self-start self-start mt-40' >
             <div slot='title-bar'></div>
             <div>
                 <input
@@ -43,7 +43,7 @@
                     class='my-3 ml-4 text-base border flex-grow rounded-full bg-slate-300 m-2 pl-5'
                     bind:value={input}
                 />
-                <ul class='list-disc'>
+                <ul class=''>
                     {#each suggestions as suggestion}
                         <li>
                             <button

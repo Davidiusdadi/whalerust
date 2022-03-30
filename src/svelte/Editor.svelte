@@ -41,10 +41,10 @@
 <div bind:this={editor_container} class='flex-grow'>
     <div class='editor-wrapper' bind:this={editor_div} />
     <div>
-        <div class='text-lg text-gray-400 cursor-pointer'>Backlinks</div>
+        <div class='text-lg text-gray-400'>Backlinks</div>
         <ul class='list-disc pl-5'>
             {#each backrefs as ref}
-                <li on:click={() => open_page(ref.from)}>
+                <li class='cursor-pointer' on:click={() => open_page(ref.from)}>
                     {ref.from}
                 </li>
             {/each}
