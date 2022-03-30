@@ -30,10 +30,6 @@ export function setFiles(_files: File[]) {
     new_files.forEach((f) => index.addFile(f))
     update_files(new_files)
 
-    if (is_files_init && _files.length > 0) {
-        update_file(_files[0])
-    }
-
 // 4 debug purposes
     ;(window as any).files = files  // eslint-disable-line
     ;(window as any).index = index // eslint-disable-line
@@ -42,7 +38,7 @@ export function setFiles(_files: File[]) {
 
 export function onLoadUrl(url: string) {
     console.info(`opening url: ${url}`)
-    boostrap_via_server_dump(url)
+    return boostrap_via_server_dump(url)
         .then((loaded_files) => {
             localStorage.setItem(URL_LOCAL_STORAGE_KEY, url)
             setFiles(loaded_files)
@@ -60,7 +56,7 @@ export function manifestFile(source: Source, name: string) {
         file = new File({
             source,
             name: `${name}.md`,
-            content: `# ${name}`
+            content: `# ${name}\n\n\n\n`
         })
         _files.push(file)
         update_files(_files)
@@ -95,4 +91,22 @@ export function suggest(query: string): FileSuggestion[] {
 }
 
 
-onLoadUrl(localStorage.getItem(URL_LOCAL_STORAGE_KEY) ?? '/api/dump')
+const startup_url = localStorage.getItem(URL_LOCAL_STORAGE_KEY) ?? '/api/dump'
+
+onLoadUrl(startup_url)
+    .then(e => {
+        console.info(`loaded: ${startup_url}`)
+    })
+    .catch(e => {
+        console.error(`failed to load ${startup_url}`, e)
+    })
+    .finally(() => {
+        const _files = get(files)
+        let hash = window.location.hash
+        if (hash) {
+            hash = hash.slice(1) // remove the #
+            update_file(manifestFile(_files[0].source, hash))
+        } else if (_files.length > 0) {
+            update_file(_files[0])
+        }
+    })

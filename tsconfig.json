@@ -8,6 +8,8 @@
     "public/*"
   ],
   "compilerOptions": {
+    "target": "ES2018",
+    "outDir": "target",
     "paths": {
       "src/*": [
         "./src/*"
