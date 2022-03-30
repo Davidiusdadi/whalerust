@@ -6,7 +6,8 @@
     "prettier"
   ],
   "rules": {
-    "semi": "off"
+    "semi": "off",
+    "@typescript-eslint/no-non-null-assertion": "off"
   },
   "settings": {
     "svelte3/typescript": true

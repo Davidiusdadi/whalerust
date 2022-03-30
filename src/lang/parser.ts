@@ -107,7 +107,6 @@ export const HashTag: MarkdownConfig = {
                     // jump
                 }
 
-                console.log(`hash fw:`, i)
                 if (i < 1) {
                     return -1
                 }

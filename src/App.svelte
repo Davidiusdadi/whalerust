@@ -2,7 +2,7 @@
     import Editor from 'src/svelte/Editor.svelte'
     import type { File } from 'src/db/file'
     import Header from 'src/svelte/Header.svelte'
-    import { files, index, file, manifestFile, onUserFileSelected } from './store/core'
+    import { index, file } from './store/core'
 
 
     let dislayed_file: File | null = null
@@ -17,7 +17,7 @@
                     top: 0,
                     left: 0,
                     behavior: 'smooth'
-                });
+                })
             }, 0)
         }
     })
@@ -26,7 +26,7 @@
 </script>
 
 <div class='flex flex-col'>
-    <Header/>
+    <Header />
     <main class='wr-main-doc flex lg:w-[700px] lg:m-auto'>
         <div class='wr-page-container flex flex-grow pl-5'>
             {#if dislayed_file}

@@ -22,6 +22,7 @@ import { ListMarkDecorationPlugin } from 'src/lang/decorations/list'
 import { WikiLinkDecorationPlugin } from 'src/lang/decorations/wikilink'
 import { indentUnit } from '@codemirror/language'
 import { tabSize } from 'src/store/defaults'
+import { ImageDecorationPlugin } from 'src/lang/decorations/image'
 
 
 const basicSetup = [
@@ -94,6 +95,7 @@ export default (editor_div: Element, content: string, index: Index) => {
                 }),
                 ListMarkDecorationPlugin,
                 WikiLinkDecorationPlugin,
+                ImageDecorationPlugin,
                 myHighlightStyle
             ]
         }),
