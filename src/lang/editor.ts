@@ -63,7 +63,7 @@ const markdown_lang = markdown({
 })
 
 
-const fixedHeightEditor = EditorView.theme({
+const scroller = EditorView.theme({
     '.cm-scroller': { overflow: 'auto' }
 })
 
@@ -87,7 +87,7 @@ export default (editor_div: Element, content: string, index: Index) => {
                 EditorState.tabSize.of(tabSize),
                 keymap.of([indentWithTab]),
                 markdown_lang,
-                fixedHeightEditor,
+                scroller,
                 autocompletion({
                     override: [
                         completion(index).wiki_complete

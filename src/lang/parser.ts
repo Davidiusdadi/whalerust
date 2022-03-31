@@ -7,7 +7,8 @@ export const NodeNames = {
     'WikiLinkMarkStart': 'WikiLinkMarkStart',
     'WikiLinkMarkEnd': 'WikiLinkMarkEnd',
     'InlineURL': 'InlineURL',
-    'HashText': 'HashText'
+    'HashText': 'HashText',
+    LinkMark: 'LinkMark'
 }
 
 const BO = 91 /* [  bracket open */

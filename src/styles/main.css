@@ -23,6 +23,7 @@ body, html {
 .wr-list-mark-decoration::after {
     content: '•';
 }
+
 @tailwind base;
 
 @layer base {
@@ -39,6 +40,52 @@ body, html {
 [x-data-target], a[href] {
     cursor: pointer;
 }
+
 [x-data-target]:hover, a[href] {
     text-decoration: underline;
+}
+
+:root {
+    --indent: 20px;
+    --data-depth: 1; /** will be overwritten by style attr*/
+}
+
+
+.ͼ1 .cm-line[x-data-depth] {
+    margin-left: calc(var(--indent) * var(--data-depth)) !important;
+
+}
+
+.wp-list-line {
+    position: relative;
+}
+
+.tick {
+    cursor: none;
+    display: inline-block;
+}
+
+.tick:before {
+    position: absolute;
+    content: '';
+    width: 1px;
+    right: calc(100% - var(--indent) / 2 + var(--indent) * var(--data-depth)) !important;
+    top: 0;
+    bottom: 0;
+    border-left: 1px solid lightblue !important;
+}
+
+.tick:first-child:before {
+    display: none;
+    top: 28px;
+}
+
+
+.wp-list-item {
+    border-left: 1px solid royalblue !important;
+}
+
+.cm-line[x-data-depth]:before {
+    content: '•';
+    margin-left: -14px;
 }
