@@ -24,25 +24,14 @@
             return
         }
 
-        let loader: (content: string) => File[]
         const file_name = selected_file.name
         const source = new Source(file_name)
-        if (selected_file.name.toLowerCase().endsWith('.json')) {
-            loader = (c: string) => {
-                return loadRoamData(source, c)
-            }
-        } else if (selected_file.name.toLowerCase().endsWith('.md')) {
-            loader = (c: string) => loadMdData(source, file_name, c)
-        } else {
-            console.error(``)
-            return
-        }
 
         let reader = new FileReader()
         reader.readAsText(selected_file)
         reader.onload = (e: ProgressEvent<FileReader>) => {
             const file_content = e.target!.result!.toString()
-            setFiles(loader(file_content))
+            setFiles(source.getLoader()(file_content))
         }
     }
 </script>

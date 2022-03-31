@@ -1,8 +1,8 @@
 import { File } from 'src/db/file'
 import { Index } from 'src/db/indexer'
-import { boostrap_via_server_dump } from 'src/store/boostrap'
 import { readable, get } from 'svelte/store'
-import type { Source } from 'src/db/file_source'
+import { Source } from 'src/db/file_source'
+import { succinct_error_message } from 'src/helper'
 
 const URL_LOCAL_STORAGE_KEY = 'roam_dump_json_url'
 
@@ -17,12 +17,9 @@ export const file = readable(null as File | null, set => {
     update_file = set
 })
 
-export let index: Index = new Index()
-
+export const index: Index = new Index()
 
 export function setFiles(_files: File[]) {
-
-    const is_files_init = get(files).length === 0
 
     const new_files = _files.sort((a, b) => {
         return b.date - a.date // desc
@@ -36,17 +33,19 @@ export function setFiles(_files: File[]) {
 }
 
 
-export function onLoadUrl(url: string) {
+export async function onLoadUrl(url: string) {
     console.info(`opening url: ${url}`)
-    return boostrap_via_server_dump(url)
-        .then((loaded_files) => {
-            localStorage.setItem(URL_LOCAL_STORAGE_KEY, url)
-            setFiles(loaded_files)
-        })
-        .catch((e: Error) => {
-            update_files([])
-            console.error(`opening failed: ${url}\n error: ${e.toString()}`)
-        })
+    try {
+        const resp = await fetch(url)
+        const roam_json_string = await resp.text()
+        const source = new Source(url)
+        const files_loaded = source.getLoader()(roam_json_string)
+        localStorage.setItem(URL_LOCAL_STORAGE_KEY, url)
+        setFiles(files_loaded)
+    } catch (e) {
+        update_files([])
+        console.error(`opening failed: ${url}\n error: ${succinct_error_message(e)}`)
+    }
 }
 
 export function manifestFile(source: Source, name: string) {
@@ -93,20 +92,27 @@ export function suggest(query: string): FileSuggestion[] {
 
 const startup_url = localStorage.getItem(URL_LOCAL_STORAGE_KEY) ?? '/api/dump'
 
-onLoadUrl(startup_url)
-    .then(e => {
-        console.info(`loaded: ${startup_url}`)
-    })
-    .catch(e => {
-        console.error(`failed to load ${startup_url}`, e)
-    })
-    .finally(() => {
-        const _files = get(files)
-        let hash = window.location.hash
-        if (hash) {
-            hash = hash.slice(1) // remove the #
-            update_file(manifestFile(_files[0].source, hash))
-        } else if (_files.length > 0) {
-            update_file(_files[0])
+// startup sequence
+void (async () => {
+    const unsub = files.subscribe((files) => {
+        if (files.length > 0) {
+            unsub()
+            let hash = decodeURIComponent(window.location.hash)
+            if (hash) {
+                hash = hash.slice(1) // remove the #
+                update_file(manifestFile(files[0].source, hash))
+            } else if (files.length > 0) {
+                update_file(files[0])
+            }
         }
     })
+
+    try {
+        await onLoadUrl(startup_url)
+        console.info(`loaded: ${startup_url}`)
+    } catch (e) {
+        console.error(`failed to load ${startup_url}`, e)
+        unsub()
+    }
+})()
+

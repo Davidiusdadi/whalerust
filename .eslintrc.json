@@ -7,7 +7,12 @@
   ],
   "rules": {
     "semi": "off",
-    "@typescript-eslint/no-non-null-assertion": "off"
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/restrict-template-expressions": [ "error",
+      {
+        "allowNullish": true
+      }
+    ]
   },
   "settings": {
     "svelte3/typescript": true
