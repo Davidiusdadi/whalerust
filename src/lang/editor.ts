@@ -18,15 +18,14 @@ import { markdown, commonmarkLanguage } from '@codemirror/lang-markdown'
 import { extensions as markdown_extensions, tags } from '../lang/parser'
 import completion from 'src/lang/completion'
 import type { Index } from 'src/db/indexer'
-import { ListMarkDecorationPlugin } from 'src/lang/decorations/list'
-import { WikiLinkDecorationPlugin } from 'src/lang/decorations/wikilink'
+import { ConsistentPlugin } from 'src/lang/decorations/consistent_plugin'
 import { indentUnit } from '@codemirror/language'
 import { tabSize } from 'src/store/defaults'
-import { ImageDecorationPlugin } from 'src/lang/decorations/image'
+import { EmphemeralPlugin } from 'src/lang/decorations/emphemeral_plugin'
 
 
 const basicSetup = [
-    //lineNumbers(),
+    lineNumbers(),
     //highlightActiveLineGutter(),
     //highlightSpecialChars(),
     history(),
@@ -89,9 +88,8 @@ export default (editor_div: Element, content: string, index: Index) => {
                         completion(index).wiki_complete
                     ]
                 }),
-                ListMarkDecorationPlugin,
-                WikiLinkDecorationPlugin,
-                ImageDecorationPlugin,
+                ConsistentPlugin,
+                EmphemeralPlugin,
                 myHighlightStyle
             ]
         }),

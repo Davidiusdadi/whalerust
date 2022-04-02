@@ -1,5 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
+:root {
+    --indent: 20px;
+    --data-depth: 1; /** will be overwritten by style attr*/
+    --code-text-border-radius: 10px;
+    --code-bg-color: #f9f2f4;
+}
+
 body, html {
     font-size: 16px;
     font-weight: 400;
@@ -45,12 +52,6 @@ body, html {
 [x-data-target]:hover, a[href]:hover {
     text-decoration: underline;
 }
-
-:root {
-    --indent: 20px;
-    --data-depth: 1; /** will be overwritten by style attr*/
-}
-
 
 .ͼ1 .cm-line[x-data-depth] {
     margin-left: calc(var(--indent) * var(--data-depth)) !important;

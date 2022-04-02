@@ -1,26 +1,8 @@
-import { PluginValue, WidgetType } from '@codemirror/view'
-import { EditorView, Decoration, Range } from '@codemirror/view'
-import { syntaxTree } from '@codemirror/language'
-import { ViewUpdate, ViewPlugin, DecorationSet } from '@codemirror/view'
+import { Decoration, Range, WidgetType } from '@codemirror/view'
+import type { SyntaxTreeDecorationDefinition } from 'src/lang/decorations/decoration_helper'
+import type { EditorView } from '@codemirror/basic-setup'
 import { NodeNames } from 'src/lang/parser'
 
-class ListMarkWidget extends WidgetType {
-
-    eq(_widget: WidgetType): boolean {
-        return true
-    }
-
-    toDOM() {
-        const wrap = document.createElement('span')
-        wrap.setAttribute('aria-hidden', 'true')
-        wrap.className = 'wr-list-mark-decoration'
-        return wrap
-    }
-
-    ignoreEvent() {
-        return false
-    }
-}
 
 class IndentStripes extends WidgetType {
     depth: number
@@ -46,9 +28,8 @@ class IndentStripes extends WidgetType {
     }
 }
 
-function ListMarkDecoration(view: EditorView) {
-    const state = view.state
 
+export default ((view: EditorView) => {
     const widgets: Range<Decoration>[] = []
 
     let depth = 0
@@ -75,14 +56,13 @@ function ListMarkDecoration(view: EditorView) {
         widgets.push(mark)
     }
 
-    syntaxTree(state).iterate({
-        leave(type, from, to) {
+    return {
+        leave(type): Range<Decoration>[] | void {
             if (type.name == NodeNames.ListItem) {
                 depth--
             }
         },
-        enter: (type, from, to, get) => {
-            // OrderedList
+        enter(type, from, to) {
             if (type.name == 'BulletList') {
                 list_type = 'BulletList'
             } else if (type.name == 'OrderedList') {
@@ -123,70 +103,53 @@ function ListMarkDecoration(view: EditorView) {
             } else {
                 return
             }
-        }
-    })
+        },
+        after() {
+            console.log('list_line_stripe_depth', list_line_stripe_depth)
+            for (const line_num_s of Object.keys(list_line_stripe_depth)) {
+                const line_num = parseInt(line_num_s)
+                const line = doc.line(line_num)
 
-    console.log('list_line_stripe_depth', list_line_stripe_depth)
-    for (const line_num_s of Object.keys(list_line_stripe_depth)) {
-        const line_num = parseInt(line_num_s)
-        const line = doc.line(line_num)
+                if (list_line_stripe_render[line_num]) {
+                    let ref_depth = 0
+                    for (let i = line_num - 1; list_line_stripe_render[i] !== undefined; i++) {
+                        if (list_line_stripe_render[i] === false) {
+                            ref_depth = list_line_stripe_depth[i]!
+                            break
+                        }
+                    }
 
-        if (list_line_stripe_render[line_num]) {
-            let ref_depth = 0
-            for (let i = line_num - 1; list_line_stripe_render[i] !== undefined; i++) {
-                if (list_line_stripe_render[i] === false) {
-                    ref_depth = list_line_stripe_depth[i]!
-                    break
+                    depth = ref_depth
+
+                    if (line.from === line.to) {
+                        continue
+                    }
+
+                    indent_list_line(line.from, depth, ' ')
+
+                    let to = line.from
+                    const max = line.from + depth * 4
+                    for (; to <= line.to && to < max; to++) {
+                        if (line.text[to - line.from] !== ' ') {
+                            break
+                        }
+                    }
+
+                    if (line.from === to) {
+                        continue
+                    }
+
+                    const mark = Decoration.replace({
+                        widget: new IndentStripes(depth, '')
+
+                    }).range(line.from, to)
+                    mark.value.startSide = 2
+                    widgets.push(mark)
+                    console.log(`STRIPE ln:${line_num}, dh:${depth} :: ${doc.sliceString(line.from, line.to)}`)
                 }
+
             }
-
-            depth = ref_depth
-
-            if (line.from === line.to) {
-                continue
-            }
-
-            indent_list_line(line.from, depth, ' ')
-
-            let to = line.from
-            const max = line.from + depth * 4
-            for (; to <= line.to && to < max; to++) {
-                if (line.text[to - line.from] !== ' ') {
-                    break
-                }
-            }
-
-            if (line.from === to) {
-                continue
-            }
-
-            const mark = Decoration.replace({
-                widget: new IndentStripes(depth, ''),
-
-            }).range(line.from, to)
-            mark.value.startSide = 2
-            widgets.push(mark)
-            console.log(`STRIPE ln:${line_num}, dh:${depth} :: ${doc.sliceString(line.from, line.to)}`)
-        }
-
-    }
-
-    return Decoration.set(widgets, true)
-}
-
-
-export const ListMarkDecorationPlugin = ViewPlugin.fromClass(class ListMarkDecorationPluginCLS implements PluginValue {
-    decorations: DecorationSet
-
-    constructor(view: EditorView) {
-        this.decorations = ListMarkDecoration(view)
-    }
-
-    update(update: ViewUpdate) {
-        if (update.docChanged || update.viewportChanged) {
-            this.decorations = ListMarkDecoration(update.view)
+            return widgets
         }
     }
-}, {
-    decorations: v => v.decorations
-})
+}) as SyntaxTreeDecorationDefinition
