@@ -16,7 +16,7 @@ export default function(index: Index) {
         let start_of_suggest: number
         let end_of_suggest: number
 
-        console.log('cursor at:', nodeBefore.type.name)
+        console.log('cursor at:', nodeBefore.type.name, context.state.doc.sliceString(nodeBefore.from, nodeBefore.to))
 
         if (nodeBefore.type.name === NodeNames.WikiLinkMarkStart) {
             if (nodeBefore.to !== context.pos) {

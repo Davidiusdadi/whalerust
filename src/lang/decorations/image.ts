@@ -14,7 +14,7 @@ import { NodeNames } from 'src/lang/parser'
 
 const ImageLabelRegex = /^(.+)\|(?:(\d+)|(\d+)x(\d+))/
 
-class ImageWidget extends WidgetType {
+abstract class LinkType extends WidgetType {
     readonly src: string
     readonly label: string
 
@@ -26,6 +26,12 @@ class ImageWidget extends WidgetType {
 
     eq(_widget: ImageWidget): boolean {
         return _widget.src === this.src && _widget.label === this.label
+    }
+}
+
+class ImageWidget extends LinkType {
+    constructor(src: string, label: string) {
+        super(src, label)
     }
 
     toDOM() {
@@ -49,9 +55,25 @@ class ImageWidget extends WidgetType {
 
         return img
     }
+}
 
-    ignoreEvent() {
-        return false
+class AnchorLink extends LinkType {
+    constructor(src: string, label: string) {
+        super(src, label)
+    }
+
+    toDOM() {
+        const a = document.createElement('a') as HTMLAnchorElement
+        a.setAttribute('href', this.src)
+        a.target = '_blank'
+        a.innerText = this.label
+        return a
+    }
+}
+
+class HTMLHRElementWidget extends WidgetType {
+    toDOM(view: EditorView): HTMLElement {
+        return document.createElement('hr')
     }
 }
 
@@ -59,30 +81,76 @@ function ImageDecoration(view: EditorView, ranges = view.visibleRanges) {
     const widgets: Range<Decoration>[] = []
     for (const { from, to } of ranges) {
         let list_marks: [number, number][] = []
+        let is_image = false
+        let mark_line = 0
+
+        const doc = view.state.doc
+
         syntaxTree(view.state).iterate({
             from, to,
             enter: (type, from, to) => {
                 if (type.name == NodeNames.LinkMark) {
-                    if (list_marks.length === 0 && '![' !== view.state.doc.sliceString(from, to)) {
+                    const line = doc.lineAt(from)
+                    const line_num = line.number
+                    if (list_marks.length === 0) {
+                        const char = doc.sliceString(from, to)
+                        is_image = '![' === char
+                        if (char === ']' || char === ':') {
+                            console.log('bad entry:', doc.sliceString(line.from, line.to))
+                            return
+                        }
+                        mark_line = line_num
+                        console.log('gather:', char, 'at', mark_line)
+                    } else if (line_num !== mark_line) {
+                        console.log('multi line bad:', doc.sliceString(line.from, line.to), line_num, mark_line)
+                        list_marks = []
                         return
                     }
                     list_marks.push([from, to])
-                    if (list_marks.length % 4 === 0) {
-                        console.log('ImageDecoration:', view.state.doc.sliceString(list_marks[0][0], list_marks[3][1]))
+
+                    if (list_marks.length === 2) {
+                        const next_char = doc.sliceString(to, to + 1)
+                        if (next_char !== '(') { // skip foot-note link references
+                            console.log('skip link ', doc.sliceString(list_marks[0][0], to + 1))
+                            list_marks = []
+                        }
+                    }
+                    if (list_marks.length === 4) {
+                        console.log('ImageDecoration:', doc.sliceString(list_marks[0][0], list_marks[3][1]))
                         const deco = Decoration.replace({
-                            widget: new ImageWidget(
-                                view.state.doc.sliceString(list_marks[2][1], list_marks[3][0]),
-                                view.state.doc.sliceString(list_marks[0][1], list_marks[1][0])
+                            widget: new (is_image ? ImageWidget : AnchorLink)(
+                                doc.sliceString(list_marks[2][1], list_marks[3][0]),
+                                doc.sliceString(list_marks[0][1], list_marks[1][0])
                             )
                         })
                         widgets.push(deco.range(list_marks[0][0], list_marks[3][1]))
                         list_marks = []
                     }
+                } else if (type.name === NodeNames.EmphasisMark) {
+                    const mark = Decoration.replace({}).range(from, to)
+                    mark.value.startSide = 0
+                    widgets.push(mark)
+                } else if (type.name === NodeNames.StrongEmphasis) {
+                    const mark = Decoration.mark({
+                        class: 'wr-strong'
+                    }).range(from, to)
+                    mark.value.startSide = 1
+                    widgets.push(mark)
+                } else if (type.name === NodeNames.HeaderMark) {
+                    const mark = Decoration.replace({}).range(from, to + 1)
+                    widgets.push(mark)
+                } else if (type.name == NodeNames.HorizontalRule) {
+                    //const line =  doc.lineAt(from)
+                    widgets.push(Decoration.replace({
+                        widget: new HTMLHRElementWidget()
+                    }).range(from, to))
+                } else if (type.name === NodeNames.CodeMark) {
+                    widgets.push(Decoration.replace({}).range(from, to))
                 }
             }
         })
     }
-    return Decoration.set(widgets)
+    return Decoration.set(widgets, true)
 }
 
 export const ImageDecorationPlugin = ViewPlugin.fromClass(class ImageDecorationPluginCLS implements PluginValue {

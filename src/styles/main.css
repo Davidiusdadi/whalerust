@@ -39,9 +39,10 @@ body, html {
 /* holds the name of a page that can be navigated to */
 [x-data-target], a[href] {
     cursor: pointer;
+    color: royalblue;
 }
 
-[x-data-target]:hover, a[href] {
+[x-data-target]:hover, a[href]:hover {
     text-decoration: underline;
 }
 
@@ -75,7 +76,8 @@ body, html {
     border-left: 1px solid lightblue !important;
 }
 
-.tick:first-child:before {
+
+.tick.wp-skip-first:first-child:before {
     display: none;
     top: 28px;
 }
@@ -86,6 +88,62 @@ body, html {
 }
 
 .cm-line[x-data-depth]:before {
-    content: '•';
+    content: attr(x-data-indent-style);
     margin-left: -14px;
+}
+
+.wr-strong {
+    font-weight: bold;
+}
+
+.wp-code-text {
+    background-color: var(--code-bg-color);
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    padding-left: 4px;
+}
+
+.wp-code-text.wp-fist-child {
+    padding-top: 4px;
+    border-top: 1px solid #ccc;
+    border-top-left-radius: var(--code-text-border-radius);
+    border-top-right-radius: var(--code-text-border-radius);
+}
+
+.wp-code-text.wp-last-child {
+    padding-bottom: 4px;
+    border-bottom: 1px solid #ccc;
+    border-bottom-left-radius: var(--code-text-border-radius);
+    border-bottom-right-radius: var(--code-text-border-radius);
+}
+
+.wp-inline-code {
+    padding: 2px 4px;
+    color: #c7254e;
+    border-radius: 4px;
+    background-color: var(--code-bg-color);
+}
+
+.wp-heading-ATXHeading1 {
+    font-size: 3em;
+}
+
+.wp-heading-ATXHeading2 {
+    font-size: 2.5em;
+}
+
+.wp-heading-ATXHeading3 {
+    font-size: 2.1em;
+}
+
+.wp-heading-ATXHeading4 {
+    font-size: 1.9em;
+}
+
+.wp-heading-ATXHeading5 {
+    font-size: 1.7em;
+}
+
+.wp-heading-ATXHeading6 {
+    font-size: 1.5em;
 }

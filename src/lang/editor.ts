@@ -39,7 +39,6 @@ const basicSetup = [
     defaultHighlightStyle.fallback,
     bracketMatching(),
     closeBrackets(),
-
     rectangularSelection(),
     highlightActiveLine(),
     highlightSelectionMatches(),
@@ -68,13 +67,10 @@ const scroller = EditorView.theme({
 })
 
 const myHighlightStyle = HighlightStyle.define([
-    { tag: tags.heading1, 'font-size': '2em' },
-    { tag: tags.heading2, 'font-size': '1.5em' },
-    { tag: tags.heading3, 'font-size': '1.3em' },
     { tag: tags.processingInstruction, 'color': 'gray', opacity: '0.5' },
     { tag: tags.link, 'color': '#0077be' },
     { tag: tags.strong, 'font-weight': 'bold' },
-    { tag: tags.emphasis, 'font-style': 'italic' }
+    { tag: tags.emphasis, 'font-style': 'italic' },
 ])
 
 export default (editor_div: Element, content: string, index: Index) => {

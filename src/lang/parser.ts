@@ -8,7 +8,16 @@ export const NodeNames = {
     'WikiLinkMarkEnd': 'WikiLinkMarkEnd',
     'InlineURL': 'InlineURL',
     'HashText': 'HashText',
-    LinkMark: 'LinkMark'
+    LinkMark: 'LinkMark',
+    ListItem: 'ListItem',
+    EmphasisMark: 'EmphasisMark',
+    StrongEmphasis: 'StrongEmphasis',
+    HeaderMark: 'HeaderMark',
+    HorizontalRule: 'HorizontalRule',
+    CodeText: 'CodeText',
+    FencedCode: 'FencedCode',
+    CodeMark: 'CodeMark',
+    InlineCode: 'InlineCode'
 }
 
 const BO = 91 /* [  bracket open */
