@@ -25,7 +25,7 @@ import { EmphemeralPlugin } from 'src/lang/decorations/emphemeral_plugin'
 
 
 const basicSetup = [
-    lineNumbers(),
+    //lineNumbers(),
     //highlightActiveLineGutter(),
     //highlightSpecialChars(),
     history(),

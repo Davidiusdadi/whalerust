@@ -2,6 +2,7 @@ import { Decoration, Range, WidgetType } from '@codemirror/view'
 import type { SyntaxTreeDecorationDefinition } from 'src/lang/decorations/decoration_helper'
 import type { EditorView } from '@codemirror/basic-setup'
 import { NodeNames } from 'src/lang/parser'
+import type { EphemeralDecoration } from 'src/lang/decorations/decoration_helper'
 
 
 class IndentStripes extends WidgetType {
@@ -22,15 +23,32 @@ class IndentStripes extends WidgetType {
             tick.setAttribute('style', `--data-depth: ${i + 1};`)
             wrap.appendChild(tick)
         }
-        console.log('indent strips', this.depth)
         return wrap
 
     }
 }
 
+class HTMLElem extends WidgetType {
+    tag: string
+    customizer: (e: HTMLElement) => void
+
+
+    constructor(tag: string, customizer: (e: HTMLElement) => void) {
+        super()
+        this.tag = tag
+        this.customizer = customizer
+    }
+
+    toDOM(view: EditorView): HTMLElement {
+        const elem = document.createElement(this.tag)
+        this.customizer(elem)
+        return elem
+    }
+}
+
 
 export default ((view: EditorView) => {
-    const widgets: Range<Decoration>[] = []
+    const range: Range<Decoration>[] = []
 
     let depth = 0
     let list_type: 'BulletList' | 'OrderedList' = 'OrderedList'
@@ -38,22 +56,38 @@ export default ((view: EditorView) => {
 
     const doc = view.state.doc
 
-    const list_line_stripe_depth: (number | undefined)[] = []
+    const list_line_stripe_depth: number[] = []
     const list_line_stripe_render: (boolean | undefined)[] = []
 
-    const indent_list_line = (from: number, depth: number, indent_style = '•') => {
-        const line = doc.lineAt(from)
-        const mark = Decoration.line({
-            class: 'wp-list-line',
-            attributes: {
-                'x-data-indent-style': indent_style,
-                'x-data-depth': depth.toString(),
-                'x-data-list-type': list_type,
-                'style': `--data-depth: ${depth};`
+    const indent_style = (indent_style = '•') => {
+        if (indent_style) {
+            if (['+', '-', '*'].includes(indent_style)) {
+                indent_style = '•'
             }
-        }).range(line.from)
-        mark.value.startSide = 1
-        widgets.push(mark)
+        }
+        return indent_style
+    }
+
+    const lead_space = (line: string) => {
+        let i = 0
+        for (; i < line.length; i++) {
+            if (line[i] != ' ') {
+                break
+            }
+        }
+        return i
+    }
+
+    const indent_list_line = (from: number, depth: number) => {
+        const line = doc.lineAt(from)
+        const mark = (Decoration.line({
+            class: 'wp-list-line wp-list-indented',
+            attributes: {
+                'style': `--data-depth: ${depth};`
+            },
+            ephemeral: false
+        }) as EphemeralDecoration).range(line.from)
+        range.push(mark)
     }
 
     return {
@@ -71,8 +105,6 @@ export default ((view: EditorView) => {
                 list_mark_i = 0
                 depth++
 
-                indent_list_line(from, depth)
-
                 const line_start = doc.lineAt(from).number
 
                 list_line_stripe_depth[line_start] = depth
@@ -85,71 +117,68 @@ export default ((view: EditorView) => {
                         list_line_stripe_render[i] = (list_line_stripe_render[i] ?? true)
                     }
                 }
-
             } else if (type.name === 'ListMark') {
                 list_mark_i++
                 if (list_mark_i === 1) {
                     const line = doc.lineAt(from)
                     list_line_stripe_render[line.number] = false
-                    {
-                        const mark = Decoration.replace({
-                            widget: new IndentStripes(depth, 'wp-skip-first')
-                        }).range(line.from, to)
-                        mark.value.startSide = 2
-                        widgets.push(mark)
-                    }
-                }
 
+                    let mark = Decoration.widget({
+                        widget: new IndentStripes(depth, 'wp-skip-first'),
+                        side: -1
+                    }).range(from)
+                    mark.value.startSide = -2
+                    range.push(mark)
+
+                    mark = Decoration.replace({
+                        widget: new HTMLElem('span', (e) => {
+                            e.setAttribute('wp-list-mark', indent_style(doc.sliceString(from, to)))
+                        })
+                    }).range(from, to)
+                    mark.value.startSide = -1
+                    range.push(mark)
+                    doc.sliceString(from, to)
+                }
             } else {
                 return
             }
         },
         after() {
-            console.log('list_line_stripe_depth', list_line_stripe_depth)
             for (const line_num_s of Object.keys(list_line_stripe_depth)) {
                 const line_num = parseInt(line_num_s)
                 const line = doc.line(line_num)
+                let depth = list_line_stripe_depth[line_num]
 
-                if (list_line_stripe_render[line_num]) {
+                const has_mark = list_line_stripe_render[line_num]
+
+                if (has_mark) {
                     let ref_depth = 0
-                    for (let i = line_num - 1; list_line_stripe_render[i] !== undefined; i++) {
+                    for (let i = line_num - 1; list_line_stripe_render[i] !== undefined; i--) {
                         if (list_line_stripe_render[i] === false) {
                             ref_depth = list_line_stripe_depth[i]!
                             break
                         }
                     }
-
                     depth = ref_depth
 
-                    if (line.from === line.to) {
-                        continue
-                    }
 
-                    indent_list_line(line.from, depth, ' ')
-
-                    let to = line.from
-                    const max = line.from + depth * 4
-                    for (; to <= line.to && to < max; to++) {
-                        if (line.text[to - line.from] !== ' ') {
-                            break
-                        }
-                    }
-
-                    if (line.from === to) {
-                        continue
-                    }
-
-                    const mark = Decoration.replace({
-                        widget: new IndentStripes(depth, '')
-
-                    }).range(line.from, to)
-                    mark.value.startSide = 2
-                    widgets.push(mark)
-                    console.log(`STRIPE ln:${line_num}, dh:${depth} :: ${doc.sliceString(line.from, line.to)}`)
+                    const mark = Decoration.widget({
+                        widget: new IndentStripes(depth, ''),
+                        side: 2
+                    }).range(line.from)
+                    mark.value.startSide = 4
+                    range.push(mark)
                 }
 
+                indent_list_line(line.from, depth)
+                const lead = lead_space(line.text)
+                if (lead > 0) {
+                    const mark = Decoration.replace({}).range(line.from, line.from + lead)
+                    mark.value.startSide = 10
+                    range.push(mark)
+                }
             }
-            return widgets
+            return range
         }
     }
 }) as SyntaxTreeDecorationDefinition

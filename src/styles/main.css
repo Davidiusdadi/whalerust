@@ -1,7 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
 :root {
-    --indent: 20px;
+    --indent: 18px;
+    --indent-base-offset: 6px;
     --data-depth: 1; /** will be overwritten by style attr*/
     --code-text-border-radius: 10px;
     --code-bg-color: #f9f2f4;
@@ -27,8 +28,13 @@ body, html {
     padding: 4px 2px 4px 2px !important;
 }
 
-.wr-list-mark-decoration::after {
-    content: '•';
+[wp-list-mark] {
+    margin-left: -16px;
+}
+
+[wp-list-mark]:before {
+    content: attr(wp-list-mark);
+
 }
 
 @tailwind base;
@@ -53,7 +59,7 @@ body, html {
     text-decoration: underline;
 }
 
-.ͼ1 .cm-line[x-data-depth] {
+.cm-line.wp-list-indented {
     margin-left: calc(var(--indent) * var(--data-depth)) !important;
 
 }
@@ -88,10 +94,6 @@ body, html {
     border-left: 1px solid royalblue !important;
 }
 
-.cm-line[x-data-depth]:before {
-    content: attr(x-data-indent-style);
-    margin-left: -14px;
-}
 
 .wr-strong {
     font-weight: bold;

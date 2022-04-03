@@ -5,10 +5,16 @@ import code from 'src/lang/decorations/consistent/code'
 import HashText from 'src/lang/decorations/consistent/HashText'
 import InlineURL from 'src/lang/decorations/consistent/InlineURL'
 import WikiLink from 'src/lang/decorations/consistent/WikiLink'
-import list_as_block from 'src/lang/decorations/consistent/list_as_block'
+import list_as_block from 'src/lang/decorations/ephemeral/list_as_block'
 
 export const ConsistentPlugin = ViewPlugin.fromClass(class ConsistentPluginCLS implements PluginValue {
-    decorators: SyntaxTreeDecorationDefinition[] = [ATXHeading, code, HashText, InlineURL, list_as_block, WikiLink]
+    decorators: SyntaxTreeDecorationDefinition[] = [
+        ATXHeading,
+        code,
+        HashText,
+        InlineURL,
+        WikiLink
+    ]
     decorations: DecorationSet
 
     constructor(view: EditorView) {

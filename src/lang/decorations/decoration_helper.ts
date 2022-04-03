@@ -5,6 +5,10 @@ import type { Range } from '@codemirror/rangeset'
 import { syntaxTree } from '@codemirror/language'
 
 
+export type EphemeralDecoration<T = Decoration> = {
+    ephemeral?: boolean
+} & T
+
 export type SyntaxTreeDecorationDefinition = (view: EditorView) => {
     before?(): void
     after?(): Range<Decoration>[]

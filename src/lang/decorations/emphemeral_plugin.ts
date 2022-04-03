@@ -1,5 +1,5 @@
 import { Decoration, DecorationSet, EditorView, PluginValue, Range, ViewPlugin, ViewUpdate } from '@codemirror/view'
-import type { SyntaxTreeDecorationDefinition } from 'src/lang/decorations/decoration_helper'
+import type { EphemeralDecoration, SyntaxTreeDecorationDefinition } from 'src/lang/decorations/decoration_helper'
 import { decorateFromSyntaxTree } from 'src/lang/decorations/decoration_helper'
 import anchor_and_image_decorator from 'src/lang/decorations/ephemeral/anchor_and_image'
 import EmphasisMark from 'src/lang/decorations/ephemeral/EmphasisMark'
@@ -7,6 +7,7 @@ import StrongEmphasis from 'src/lang/decorations/ephemeral/StrongEmphasis'
 import CodeMark from 'src/lang/decorations/ephemeral/CodeMark'
 import HeaderMark from 'src/lang/decorations/ephemeral/HeaderMark'
 import HorizontalRule from 'src/lang/decorations/ephemeral/HorizontalRule'
+import list_as_block from 'src/lang/decorations/ephemeral/list_as_block'
 
 
 /**
@@ -19,6 +20,7 @@ export const EmphemeralPlugin = ViewPlugin.fromClass(class EmphemeralPluginCLS i
         EmphasisMark,
         HeaderMark,
         HorizontalRule,
+        list_as_block,
         StrongEmphasis
     ]
     decorations: DecorationSet
@@ -47,6 +49,9 @@ export const EmphemeralPlugin = ViewPlugin.fromClass(class EmphemeralPluginCLS i
 
             const rem_set: Decoration[] = []
             this.decorations.between(r.from, r.to, (f, t, v) => {
+                if ((v.spec as EphemeralDecoration).ephemeral === false) {
+                    return
+                }
                 rem_set.push(v)
                 this.hidden_decorations.add({
                     value: v,
