@@ -22,7 +22,7 @@
     <div class='flex'>
         <div class='border-r px-2'>
             <button
-                title='open roam json dump'
+                title='open markdown or roam json dump'
                 class='bg-slate-500 p-2 m-2 rounded-md hover:bg-slate-400'
                 on:click={() => {
                         dom_file_input.click()
@@ -41,7 +41,7 @@
         <div class='border-r px-2'>
             <button
                 on:click|stopPropagation={() => is_url_dialog_open = true}
-                title='open roam dump via url'
+                title='open markdown or roam dump via URL'
                 class='bg-slate-500 p-2 m-2 rounded-md hover:bg-slate-400'
             >
                 <LinkPlus {size} />

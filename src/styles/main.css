@@ -127,11 +127,15 @@ body, html {
     background-color: var(--code-bg-color);
 }
 
-.wp-heading-ATXHeading1 {
+.wp-heading {
+    line-height: initial;
+}
+
+.wp-heading-ATXHeading1, .wp-heading-SetextHeading1 {
     font-size: 3em;
 }
 
-.wp-heading-ATXHeading2 {
+.wp-heading-ATXHeading2, .wp-heading-SetextHeading2 {
     font-size: 2.5em;
 }
 

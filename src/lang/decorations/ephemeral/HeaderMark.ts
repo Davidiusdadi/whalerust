@@ -7,8 +7,12 @@ export default ((view: EditorView) => {
     return {
         enter(type, from, to) {
             if (type.name === NodeNames.HeaderMark) {
-                const mark = Decoration.replace({}).range(from, to + 1)
-                return [mark]
+                const mark = view.state.doc.sliceString(from, to)
+                if (mark[0] === '#') {
+                    return [Decoration.replace({}).range(from, to + 1)]
+                } else if (mark[0] === '=' || mark[0] === '-') {
+                    return [Decoration.replace({}).range(from, to)]
+                }
             }
         }
     }
