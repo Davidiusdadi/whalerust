@@ -15,25 +15,7 @@
 
     let dom_file_input: HTMLInputElement
 
-    function onLocalFileSelected(e: Event) {
-        const target = e.target as HTMLInputElement | null
-        let selected_file = target?.files?.[0]
 
-        if (!selected_file) {
-            console.log('no file selected')
-            return
-        }
-
-        const file_name = selected_file.name
-        const source = new Source(file_name)
-
-        let reader = new FileReader()
-        reader.readAsText(selected_file)
-        reader.onload = (e: ProgressEvent<FileReader>) => {
-            const file_content = e.target!.result!.toString()
-            setFiles(source.getLoader()(file_content))
-        }
-    }
 </script>
 
 <header class='wr-uploader flex flex-row'>
@@ -52,7 +34,7 @@
                 style='display:none'
                 type='file'
                 accept='*.json, *.md'
-                on:change={(e) => onLocalFileSelected(e)}
+                on:change={(e) => openLocalFile(e)}
                 bind:this={dom_file_input}
             />
         </div>
@@ -80,7 +62,7 @@
                             <button
                                 title='ctrl-o'
                                 class='bg-slate-500 p-2 m-2 rounded-md hover:bg-slate-400'
-                                on:click|self|stopPropagation={() => { is_url_dialog_open = false; onLoadUrl(url_input_value) }}
+                                on:click|self|stopPropagation={() => { is_url_dialog_open = false; fetchUrl(url_input_value) }}
                             >Load Url
                             </button>
                         </div>

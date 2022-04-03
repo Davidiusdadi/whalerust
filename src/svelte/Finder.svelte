@@ -2,7 +2,7 @@
     import Magnify from 'svelte-material-icons/Magnify.svelte'
     import { size } from 'src/store/defaults'
     import Dialog from 'src/svelte/Dialog.svelte'
-    import { onUserFileSelected, suggest } from 'src/store/core'
+    import { userActionViewPage, suggest } from 'src/store/core'
 
     let show = false
     let dom_input: HTMLInputElement
@@ -47,7 +47,7 @@
                     {#each suggestions as suggestion}
                         <li>
                             <button
-                                on:click={() => onUserFileSelected(suggestion.file)}
+                                on:click={() => userActionViewPage(suggestion.file)}
                             >
                                 {suggestion.file.name_short}
                             </button>

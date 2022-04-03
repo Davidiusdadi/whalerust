@@ -12,10 +12,7 @@ export default function loadRoamData(source: Source, roam_raw_data: string): Fil
     }
 
     const pages = rust.parse_dump(roam_raw_data)
-    return pages.filter(p => {
-        // filter empty pages
-        return (p.children ?? []).filter(c => c.string.trim().length > 0).length > 0
-    }).map(p => {
+    return pages.map(p => {
         return new File({
                 source,
                 name: `${p.title}.md`,

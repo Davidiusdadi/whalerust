@@ -4,13 +4,13 @@
     import Editor from '../lang/editor'
     import type { EditorView } from '@codemirror/basic-setup'
     import type { Index } from 'src/db/indexer'
-    import { manifestFile, onUserFileSelected } from 'src/store/core'
+    import { manifestFile, userActionViewPage } from 'src/store/core'
 
     export let file: File
     export let index: Index
 
     function open_page(name: string) {
-        onUserFileSelected(manifestFile(file.source, name))
+        userActionViewPage(manifestFile(file.source, name))
     }
 
     let editor_div: HTMLDivElement
