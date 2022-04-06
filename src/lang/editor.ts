@@ -22,6 +22,21 @@ import { ConsistentPlugin } from 'src/lang/decorations/consistent_plugin'
 import { indentUnit } from '@codemirror/language'
 import { tabSize } from 'src/store/defaults'
 import { EmphemeralPlugin } from 'src/lang/decorations/emphemeral_plugin'
+import type { Extension } from '@codemirror/state'
+import { Compartment } from '@codemirror/state'
+
+
+export const editor_modes = {
+    fancy: () => {
+        return [
+            EmphemeralPlugin,
+            ConsistentPlugin
+        ] as Extension[]
+    },
+    plain: () => [] as Extension[]
+}
+
+export type EditorViewMode = keyof typeof editor_modes;
 
 
 const basicSetup = [
@@ -69,31 +84,39 @@ const myHighlightStyle = HighlightStyle.define([
     { tag: tags.processingInstruction, 'color': 'gray', opacity: '0.5' },
     { tag: tags.link, 'color': '#0077be' },
     { tag: tags.strong, 'font-weight': 'bold' },
-    { tag: tags.emphasis, 'font-style': 'italic' },
+    { tag: tags.emphasis, 'font-style': 'italic' }
 ])
 
-export default (editor_div: Element, content: string, index: Index) => {
+
+export default (editor_div: Element, content: string, index: Index, extenison: Extension[]) => {
+
+    const compartment = new Compartment
+    const extensions: Extension[] = [
+        basicSetup,
+        indentUnit.of(' '.repeat(tabSize)),
+        EditorState.tabSize.of(tabSize),
+        keymap.of([indentWithTab]),
+        markdown_lang,
+        scroller,
+        autocompletion({
+            override: [
+                completion(index).wiki_complete
+            ]
+        }),
+        myHighlightStyle,
+        compartment.of(extenison)
+    ]
+
+
     const editor = new EditorView({
         state: EditorState.create({
             doc: content,
-            extensions: [
-                basicSetup,
-                indentUnit.of(' '.repeat(tabSize)),
-                EditorState.tabSize.of(tabSize),
-                keymap.of([indentWithTab]),
-                markdown_lang,
-                scroller,
-                autocompletion({
-                    override: [
-                        completion(index).wiki_complete
-                    ]
-                }),
-                ConsistentPlugin,
-                EmphemeralPlugin,
-                myHighlightStyle
-            ]
+            extensions
         }),
         parent: editor_div
     })
-    return editor
+    return {
+        editor,
+        compartment
+    }
 }

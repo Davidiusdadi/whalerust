@@ -1,8 +1,9 @@
 import { File } from 'src/db/file'
 import { Index } from 'src/db/indexer'
-import { readable, get } from 'svelte/store'
+import { readable, get, writable } from 'svelte/store'
 import type { Source } from 'src/db/file_source'
 import session_manager from 'src/store/session_manager'
+import type { EditorViewMode } from 'src/lang/editor'
 
 
 let update_files: (files: File[]) => void = () => undefined
@@ -12,9 +13,11 @@ export const files = readable([] as File[], set => {
     update_files = set
 })
 
-export const file = readable(null as File | null, set => {
+export const file = readable<File | null>(null, set => {
     update_file = set
 })
+
+export const editor_view_mode = writable<EditorViewMode>('fancy')
 
 export const index: Index = new Index()
 

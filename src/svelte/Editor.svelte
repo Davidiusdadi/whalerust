@@ -1,10 +1,10 @@
 <script lang='ts'>
-    import { onMount } from 'svelte'
+    import { onDestroy, onMount } from 'svelte'
     import type { File } from 'src/db/file'
-    import Editor from '../lang/editor'
-    import type { EditorView } from '@codemirror/basic-setup'
+    import Editor, { editor_modes } from '../lang/editor'
     import type { Index } from 'src/db/indexer'
-    import { manifestFile, userActionViewPage } from 'src/store/core'
+    import { editor_view_mode, manifestFile, userActionViewPage } from 'src/store/core'
+    import { get } from 'svelte/store'
 
     export let file: File
     export let index: Index
@@ -14,13 +14,28 @@
     }
 
     let editor_div: HTMLDivElement
-    let editor: EditorView
+    let editor_data: ReturnType<typeof Editor>
 
     const backrefs = index.getBackLinks(file)
     let editor_container: HTMLElement
 
+    let unsub_editor_view_mode = editor_view_mode.subscribe(view_mode => {
+        if (!editor_data) {
+            return
+        }
+        console.log(`reconfigure editor to ${view_mode}`)
+        editor_data.editor.dispatch({
+            effects: [editor_data.compartment.reconfigure(
+                editor_modes[view_mode]()
+            )]
+        })
+    })
+    onDestroy(unsub_editor_view_mode)
+
     onMount(() => {
-        editor = Editor(editor_div, file.content, index)
+        const extension = editor_modes[get(editor_view_mode)]()
+        editor_data = Editor(editor_div, file.content, index, extension)
+
         editor_container.addEventListener('click', (e) => {
             console.log('click event: ', e)
             const t = e.target
@@ -44,6 +59,7 @@
             }
         })
     })
+
 </script>
 
 <div bind:this={editor_container} class='flex-grow'>

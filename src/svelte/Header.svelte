@@ -1,14 +1,12 @@
 <script lang='ts'>
     import IconFolderPlus from 'svelte-material-icons/FolderPlus.svelte'
     import LinkPlus from 'svelte-material-icons/LinkPlus.svelte'
+    import Sunglasses from 'svelte-material-icons/Sunglasses.svelte'
     import Dialog from './Dialog.svelte'
     import Finder from './Finder.svelte'
     import { size } from '../store/defaults'
-    import loadRoamData from 'src/db/roam-loader'
-    import { setFiles, onLoadUrl } from 'src/store/core'
-    import loadMdData from 'src/db/markdown-loader'
-    import { Source } from 'src/db/file_source'
-    import type { File } from 'src/db/file'
+    import { fetchUrl, openLocalFile } from 'src/store/io'
+    import { editor_view_mode } from 'src/store/core'
 
     let url_input_value: string = ''
     let is_url_dialog_open = false
@@ -18,7 +16,7 @@
 
 </script>
 
-<header class='wr-uploader flex flex-row'>
+<header class='wr-uploader flex justify-between'>
     <div class='flex'>
         <div class='border-r px-2'>
             <button
@@ -71,5 +69,16 @@
             </button>
         </div>
         <Finder />
+    </div>
+    <div>
+        <div class='border-r px-2 justify-self-end'>
+            <button
+                on:click|stopPropagation={() => editor_view_mode.set($editor_view_mode === 'fancy' ? 'plain' : 'fancy')}
+                title='toggle editor view mode (fancy / plain)'
+                class='bg-slate-500 p-2 m-2 rounded-md hover:bg-slate-400'
+            >
+                <Sunglasses {size} />
+            </button>
+        </div>
     </div>
 </header>
