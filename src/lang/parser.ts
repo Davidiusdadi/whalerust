@@ -20,38 +20,71 @@ export const NodeNames = {
     InlineCode: 'InlineCode'
 }
 
-const BO = 91 /* [  bracket open */
-const BC = 93 /* ] bracken close */
+
+function makeSimpleBracket({ tag, tag_open, tag_close, char_open, char_close }: {
+    tag: string,
+    tag_open: string
+    tag_close: string,
+    char_open: number,
+    char_close: number,
+}) {
+
 // our custom extension (that currently ONLY works because the forked/modified @lezer/markdown and @lezer/lang-markdown )
-export const WikiLink: MarkdownConfig = {
-    defineNodes: ['WikiLink', 'WikiLinkMarkStart', 'WikiLinkMarkEnd'],
-    parseInline: [{
-        name: 'WikiLink',
-        before: 'Link',
-        parse: function WikiLink(cx, next, pos) {
-            if (next === BO && cx.char(pos + 1) === BO) {
-                const elts = [cx.elt('WikiLinkMarkStart', pos, pos + 2)]
-                for (let i = pos + 2; i < cx.end; i++) {
-                    const next = cx.char(i)
-                    if (next == 13 /* newline */) {
-                        break
-                    }
-                    if (next == BC && cx.char(i + 1) == BC) {
-                        return cx.addElement(cx.elt('WikiLink', pos, i + 2, elts.concat(cx.elt('WikiLinkMarkEnd', i, i + 2))))
+    return {
+        defineNodes: [tag, tag_open, tag_close],
+        parseInline: [{
+            name: tag,
+            before: 'Link',
+            parse: function WikiLink(cx, next, pos) {
+                if (next === char_open && cx.char(pos + 1) === char_open) {
+                    const elts = [cx.elt(tag_open, pos, pos + 2)]
+                    for (let i = pos + 2; i < cx.end; i++) {
+                        const next = cx.char(i)
+                        if (next == 13 /* newline */) {
+                            break
+                        }
+                        if (next == char_close && cx.char(i + 1) == char_close) {
+                            return cx.addElement(cx.elt(tag, pos, i + 2, elts.concat(cx.elt(tag_close, i, i + 2))))
+                        }
                     }
                 }
+                return -1
             }
-            return -1
-        }
-    }],
-    props: [
-        styleTags({
-                'WikiLink/...': t.link,
-                'WikiLinkMarkStart WikiLinkMarkEnd': t.processingInstruction
-            }
-        )
-    ]
+        }],
+        props: [
+            styleTags({
+                    [`${tag}/...`]: t.link,
+                    [`${tag_open} ${tag_close}`]: t.processingInstruction
+                }
+            )
+        ]
+    } as MarkdownConfig
 }
+
+const WikiLink = makeSimpleBracket({
+    tag: 'WikiLink',
+    tag_open: 'WikiLinkMarkStart',
+    tag_close: 'WikiLinkMarkEnd',
+    char_open: 91, /* [  bracket open */
+    char_close: 93 /* ]  bracket open */
+})
+
+const Embed = makeSimpleBracket({
+    tag: 'Embed',
+    tag_open: 'EmbedMarkStart',
+    tag_close: 'EmbedMarkEnd',
+    char_open: '{'.charCodeAt(0), /* {  bracket open */
+    char_close: '}'.charCodeAt(0) /* } bracken close */
+})
+
+const BlockRef = makeSimpleBracket({
+    tag: 'BlockRef',
+    tag_open: 'BlockRefMarkStart',
+    tag_close: 'BlockRefMarkEnd',
+    char_open: '('.charCodeAt(0), /* {  bracket open */
+    char_close: ')'.charCodeAt(0) /* } bracken close */
+})
+
 
 // flexible yet naive url regex based on https://stackoverflow.com/a/1547940/1534894
 const url_matcher = /^[a-z]{1,10}:\/\/[a-z0-9-._~:/?#[\]@!$&'()*+,;=%]+/i
@@ -141,7 +174,7 @@ export const tags = {
 }
 
 //  based on @lezer/lang-markdown cofiguration
-export const extensions = [...[GFM, Subscript, Superscript, Emoji, WikiLink, InlineURL, HashTag], {
+export const extensions = [...[GFM, Subscript, Superscript, Emoji, WikiLink, Embed, BlockRef, InlineURL, HashTag], {
     props: [
         styleTags({
             'TableDelimiter SubscriptMark SuperscriptMark StrikethroughMark': t.processingInstruction,
