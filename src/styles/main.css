@@ -154,3 +154,7 @@ body, html {
 .wp-heading-ATXHeading6 {
     font-size: 1.5em;
 }
+
+table, th, td {
+    border: 1px solid;
+}

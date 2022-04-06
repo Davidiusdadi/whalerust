@@ -3,6 +3,7 @@ import type { SyntaxTreeDecorationDefinition } from 'src/lang/decorations/decora
 import type { EditorView } from '@codemirror/basic-setup'
 import { NodeNames } from 'src/lang/parser'
 import type { EphemeralDecoration } from 'src/lang/decorations/decoration_helper'
+import HTMLElem from 'src/lang/decorations/GenericWIdget'
 
 
 class IndentStripes extends WidgetType {
@@ -28,23 +29,6 @@ class IndentStripes extends WidgetType {
     }
 }
 
-class HTMLElem extends WidgetType {
-    tag: string
-    customizer: (e: HTMLElement) => void
-
-
-    constructor(tag: string, customizer: (e: HTMLElement) => void) {
-        super()
-        this.tag = tag
-        this.customizer = customizer
-    }
-
-    toDOM(view: EditorView): HTMLElement {
-        const elem = document.createElement(this.tag)
-        this.customizer(elem)
-        return elem
-    }
-}
 
 
 export default ((view: EditorView) => {

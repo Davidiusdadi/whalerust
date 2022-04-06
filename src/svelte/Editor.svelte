@@ -34,7 +34,7 @@
 
     onMount(() => {
         const extension = editor_modes[get(editor_view_mode)]()
-        editor_data = Editor(editor_div, file.content, index, extension)
+        editor_data = Editor(editor_div, file.content, extension)
 
         editor_container.addEventListener('click', (e) => {
             console.log('click event: ', e)

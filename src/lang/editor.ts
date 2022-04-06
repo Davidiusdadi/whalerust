@@ -24,20 +24,20 @@ import { tabSize } from 'src/store/defaults'
 import { EmphemeralPlugin } from 'src/lang/decorations/emphemeral_plugin'
 import type { Extension } from '@codemirror/state'
 import { Compartment } from '@codemirror/state'
+import { table_marker } from 'src/lang/decorations/table'
+import { index } from 'src/store/core'
 
+const markdown_lang = markdown({
+    base: commonmarkLanguage,
+    extensions: markdown_extensions
+})
 
-export const editor_modes = {
-    fancy: () => {
-        return [
-            EmphemeralPlugin,
-            ConsistentPlugin
-        ] as Extension[]
-    },
-    plain: () => [] as Extension[]
-}
-
-export type EditorViewMode = keyof typeof editor_modes;
-
+const myHighlightStyle = HighlightStyle.define([
+    { tag: tags.processingInstruction, 'color': 'gray', opacity: '0.5' },
+    { tag: tags.link, 'color': '#0077be' },
+    { tag: tags.strong, 'font-weight': 'bold' },
+    { tag: tags.emphasis, 'font-style': 'italic' }
+])
 
 const basicSetup = [
     //lineNumbers(),
@@ -67,46 +67,46 @@ const basicSetup = [
         ...lintKeymap
     ]),
     // consider indent aware line warp https://gist.github.com/dralletje/058fe51415fe7dbac4709a65c615b52e
-    EditorView.lineWrapping
+    EditorView.lineWrapping,
+    indentUnit.of(' '.repeat(tabSize)),
+    EditorState.tabSize.of(tabSize),
+    keymap.of([indentWithTab]),
+    markdown_lang,
+    myHighlightStyle
 ]
 
-const markdown_lang = markdown({
-    base: commonmarkLanguage,
-    extensions: markdown_extensions
-})
+export const editor_modes = {
+    table_cell: () => [
+        markdown_lang,
+        myHighlightStyle,
+        EmphemeralPlugin,
+        ConsistentPlugin
+    ],
+    fancy: () => {
+        return [
+            autocompletion({
+                override: [
+                    completion(index).wiki_complete
+                ]
+            }),
+            EmphemeralPlugin,
+            ConsistentPlugin,
+            table_marker
+        ] as Extension[]
+    },
+    plain: () => [] as Extension[]
+}
+
+export type EditorViewMode = keyof typeof editor_modes;
 
 
-const scroller = EditorView.theme({
-    '.cm-scroller': { overflow: 'auto' }
-})
-
-const myHighlightStyle = HighlightStyle.define([
-    { tag: tags.processingInstruction, 'color': 'gray', opacity: '0.5' },
-    { tag: tags.link, 'color': '#0077be' },
-    { tag: tags.strong, 'font-weight': 'bold' },
-    { tag: tags.emphasis, 'font-style': 'italic' }
-])
-
-
-export default (editor_div: Element, content: string, index: Index, extenison: Extension[]) => {
+export default (editor_div: Element, content: string, extenison: Extension[], base = basicSetup) => {
 
     const compartment = new Compartment
     const extensions: Extension[] = [
-        basicSetup,
-        indentUnit.of(' '.repeat(tabSize)),
-        EditorState.tabSize.of(tabSize),
-        keymap.of([indentWithTab]),
-        markdown_lang,
-        scroller,
-        autocompletion({
-            override: [
-                completion(index).wiki_complete
-            ]
-        }),
-        myHighlightStyle,
+        base,
         compartment.of(extenison)
     ]
-
 
     const editor = new EditorView({
         state: EditorState.create({
