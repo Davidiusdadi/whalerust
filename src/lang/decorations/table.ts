@@ -1,6 +1,6 @@
 import { EditorView, Decoration, DecorationSet, Range, WidgetType } from '@codemirror/view'
 import { StateField, StateEffect, EditorSelection } from '@codemirror/state'
-import { syntaxTree } from '@codemirror/language'
+import { ensureSyntaxTree, syntaxParserRunning, syntaxTree, syntaxTreeAvailable } from '@codemirror/language'
 import HTMLElem from 'src/lang/decorations/GenericWIdget'
 import type { SyntaxNode } from '@lezer/common/dist/tree'
 import type { EditorState } from '@codemirror/basic-setup'
@@ -14,6 +14,7 @@ function createTableWidget(s: EditorState, on_focus: (w: WidgetType, view: Edito
     syntaxTree(s).iterate({
         enter: (type, from, to, get) => {
             if (type.name === 'Table') {
+                console.log('Table at', from)
                 const sy = get()
                 //effects.push(table_mark.of({ from, to }))
                 const table = Decoration.replace({
@@ -84,7 +85,7 @@ export const table_marker = () => {
         update(tables_visible, tr) {
             const doc = tr.state.doc
             decorations = decorations.map(tr.changes)
-            const drop_deco: Decoration[] = []
+            let cursor_selected_decorations: Decoration[] = []
             if (focused_widget) {
                 const iter = decorations.iter()
                 for (; ;) {
@@ -93,7 +94,7 @@ export const table_marker = () => {
                         break
                     }
                     if (focused_widget === (deco.spec as ReplaceDecorationSpec).widget) {
-                        drop_deco.push(deco)
+                        cursor_selected_decorations.push(deco)
                         focused_widget = null
                         setTimeout(() => {
                             view.focus()
@@ -103,27 +104,32 @@ export const table_marker = () => {
                         })
                         break
                     }
+                    iter.next()
                 }
             }
 
-            if (tr.selection) {
-                for (const range of tr.selection.ranges) {
-                    const line_from = doc.lineAt(range.from)
-                    const line_to = doc.lineAt(range.to)
-                    const line_before = line_from // line_from.number > 1 ? doc.line(line_from.number - 1) : line_from
-                    const line_after = line_to // line_to.number < doc.lines ? doc.line(line_from.number + 1) : line_to
+            const filter_selection = () => {
+                cursor_selected_decorations = []
+                if (tr.selection) {
+                    for (const range of tr.selection.ranges) {
+                        const line_from = doc.lineAt(range.from)
+                        const line_to = doc.lineAt(range.to)
+                        const line_before = line_from // line_from.number > 1 ? doc.line(line_from.number - 1) : line_from
+                        const line_after = line_to // line_to.number < doc.lines ? doc.line(line_from.number + 1) : line_to
 
-                    decorations.between(line_before.from, line_after.to, (from, to, deco) => {
-                        drop_deco.push(deco)
+                        decorations.between(line_before.from, line_after.to, (from, to, deco) => {
+                            cursor_selected_decorations.push(deco)
+                        })
+                    }
+
+                    tables_visible = decorations.update({
+                        filter: (from, to, deco) => {
+                            return !cursor_selected_decorations.includes(deco)
+                        }
                     })
                 }
-
-                tables_visible = decorations.update({
-                    filter: (from, to, deco) => {
-                        return !drop_deco.includes(deco)
-                    }
-                })
             }
+            filter_selection()
 
             if (tr.docChanged) {
                 let recalc = false
@@ -131,11 +137,12 @@ export const table_marker = () => {
                     if (recalc) {
                         return
                     }
-                    const line = tr.state.doc.lineAt(fromB)
-                    const next_line = tr.state.doc.lines > line.number ? tr.state.doc.line(line.number + 1) : line
+                    const line_from = tr.state.doc.lineAt(fromB)
+                    let line_to = tr.state.doc.lineAt(toB)
+                    line_to = tr.state.doc.lines > line_to.number ? tr.state.doc.line(line_to.number + 1) : line_to
 
                     decorations.between(fromB, toB, (from, to, deco) => {
-                        if (!drop_deco.includes(deco)) {
+                        if (!cursor_selected_decorations.includes(deco)) {
                             recalc = true
                             return false
                         }
@@ -149,8 +156,8 @@ export const table_marker = () => {
                         from: fromB,
                         to: toB,
                         enter(type: NodeType, from: number, to: number, get: () => SyntaxNode): false | void {
-                            if (line.from <= from && next_line.to >= to) { // the syntaxTree does not seem to respect our from/to exactly
-                                if (type.name.startsWith('Table')) {
+                            if (type.name.startsWith('Table')) {
+                                if (line_from.from <= from && line_to.to >= to) { // the syntaxTree does not seem to respect our from/to exactly
                                     recalc = true
                                     return false
                                 }
@@ -160,7 +167,8 @@ export const table_marker = () => {
                 })
                 if (recalc) {
                     console.log('recalc createTableWidget')
-                    decorations = createTableWidget(tr.state, on_focus)
+                    tables_visible = decorations = createTableWidget(tr.state, on_focus)
+                    filter_selection()
                 }
             }
             return tables_visible
