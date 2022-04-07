@@ -91,7 +91,7 @@ export const editor_modes = {
             }),
             EmphemeralPlugin,
             ConsistentPlugin,
-            table_marker
+            table_marker()
         ] as Extension[]
     },
     plain: () => [] as Extension[]

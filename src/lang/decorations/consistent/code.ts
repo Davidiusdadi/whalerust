@@ -14,7 +14,7 @@ export default ((view: EditorView) => {
                 for (let i = line_from; i <= line_to; i++) {
                     const line = view.state.doc.line(i).from
                     const cls = `wp-code-text${i === line_from ? ' wp-fist-child' : ''}${i === line_to ? ' wp-last-child' : ''}`
-                    console.log('class:', i, line_from, line_to, cls)
+
                     ranges.push(Decoration.line({
                         class: cls
                     }).range(line))
