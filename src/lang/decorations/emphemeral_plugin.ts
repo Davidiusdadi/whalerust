@@ -8,6 +8,7 @@ import CodeMark from 'src/lang/decorations/ephemeral/CodeMark'
 import HeaderMark from 'src/lang/decorations/ephemeral/HeaderMark'
 import HorizontalRule from 'src/lang/decorations/ephemeral/HorizontalRule'
 import list_as_block from 'src/lang/decorations/ephemeral/list_as_block'
+import type { SelectionRange } from '@codemirror/state'
 
 
 /**
@@ -23,21 +24,36 @@ export const EmphemeralPlugin = ViewPlugin.fromClass(class EmphemeralPluginCLS i
         list_as_block,
         StrongEmphasis
     ]
-    decorations: DecorationSet
-    hidden_decorations = new Set<Range<Decoration>>()
+
+    deco: EmphemeralDecorationSet
 
     constructor(view: EditorView) {
-        this.decorations = decorateFromSyntaxTree(view, this.decorators)
-        this.hidden_decorations.clear()
+        this.deco = new EmphemeralDecorationSet()
+        this.deco.set(decorateFromSyntaxTree(view, this.decorators))
     }
 
     update(update: ViewUpdate) {
         if (update.docChanged || update.viewportChanged) {
-            this.decorations = decorateFromSyntaxTree(update.view, this.decorators)
-            this.hidden_decorations.clear()
+            this.deco.set(decorateFromSyntaxTree(update.view, this.decorators))
         }
+        this.deco.update(update.state.selection.ranges)
+    }
+}, {
+    decorations: v => v.deco.decorations
+})
 
-        for (const r of update.state.selection.ranges) {
+export class EmphemeralDecorationSet {
+    decorations: DecorationSet = Decoration.none
+    private hidden_decorations = new Set<Range<Decoration>>()
+
+    set(set: DecorationSet) {
+        this.decorations = set
+        this.hidden_decorations.clear()
+    }
+
+
+    update(ranges: readonly SelectionRange[]) {
+        for (const r of ranges) {
             for (const d of this.hidden_decorations) {
                 if (r.from < d.from || r.from > d.to) {
                     this.hidden_decorations.delete(d)
@@ -69,6 +85,4 @@ export const EmphemeralPlugin = ViewPlugin.fromClass(class EmphemeralPluginCLS i
             }
         }
     }
-}, {
-    decorations: v => v.decorations
-})
+}
