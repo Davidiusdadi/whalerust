@@ -17,7 +17,11 @@ export const NodeNames = {
     CodeText: 'CodeText',
     FencedCode: 'FencedCode',
     CodeMark: 'CodeMark',
-    InlineCode: 'InlineCode'
+    InlineCode: 'InlineCode',
+    BlockRef: 'BlockRef',
+    BlockId: 'BlockId',
+    BlockIdMark: 'BlockIdMark',
+    BlockIdValue: 'BlockIdValue'
 }
 
 
