@@ -86,6 +86,64 @@ const BlockRef = makeSimpleBracket({
 })
 
 
+const BM = '^'.charCodeAt(0)
+const BlockId = {
+    defineNodes: ['BlockId', 'BlockIdMark', 'BlockIdValue'],
+    parseInline: [{
+        name: 'BlockId',
+        parse: function WikiLink(cx, next, pos) {
+            if (next === BM && is_a_space(cx.char(pos - 1))) {
+                const elts = [cx.elt('BlockIdMark', pos, pos + 1)]
+                let eof_mark_found = false
+                let eof_mark = pos + 1
+                console.log('BlockId canditate:', cx.text)
+                for (let i = pos + 1; ; i++) {
+                    const next = cx.char(i)
+
+                    if (next === BM) {
+                        return -1
+                    }
+
+                    if (next == 13 || next === -1) {
+                        if (!eof_mark_found) {
+                            eof_mark = i
+                        }
+                        if (eof_mark - (pos + 1) < 1) {
+                            return -1
+                        }
+                        return cx.addElement(
+                            cx.elt('BlockId', pos, eof_mark,
+                                elts.concat(cx.elt('BlockIdValue', pos + 1, eof_mark))
+                            )
+                        )
+                    }
+
+                    if (eof_mark_found) {
+                        if (!not_a_tag_char(next)) {
+                            return -1
+                        }
+                    } else if (!is_ref_id(next)) {
+                        if (not_a_tag_char(next)) {
+                            eof_mark_found = true
+                            eof_mark = i
+                        } else {
+                            break
+                        }
+                    }
+                }
+            }
+            return -1
+        }
+    }],
+    props: [
+        styleTags({
+                [`BlockId/...`]: t.link,
+                [`BlockIdMark BlockIdValue`]: t.processingInstruction
+            }
+        )
+    ]
+} as MarkdownConfig
+
 // flexible yet naive url regex based on https://stackoverflow.com/a/1547940/1534894
 const url_matcher = /^[a-z]{1,10}:\/\/[a-z0-9-._~:/?#[\]@!$&'()*+,;=%]+/i
 const COL = ':'.charCodeAt(0)
@@ -130,10 +188,31 @@ export const InlineURL: MarkdownConfig = {
     ]
 }
 
+function is_a_space(ch: number) {
+    return ch == 32 /* space */ || ch == 9 /* tab */
+}
 
 export function not_a_tag_char(ch: number) {
     // spaces or invalid char
-    return ch == 32 || ch == 9 || ch == 10 || ch == 13 || ch == -1
+    return is_a_space(ch) || ch == 10 || ch == 13 || ch == -1
+}
+
+export function is_hex(ch: number) {
+    const n0 = '0'.charCodeAt(0)
+    const n9 = '9'.charCodeAt(0)
+    const a = 'a'.charCodeAt(0)
+    const z = 'z'.charCodeAt(0)
+    const A = 'A'.charCodeAt(0)
+    const Z = 'Z'.charCodeAt(0)
+    return (
+        ch >= n0 && ch <= n9
+        || ch >= a && ch <= z
+        || ch >= A && ch <= Z
+    )
+}
+
+function is_ref_id(ch: number) {
+    return is_hex(ch) || ch === '_'.charCodeAt(0) || ch === '-'.charCodeAt(0)
 }
 
 const HS = '#'.charCodeAt(0)
@@ -174,20 +253,22 @@ export const tags = {
 }
 
 //  based on @lezer/lang-markdown cofiguration
-export const extensions = [...[GFM, Subscript, Superscript, Emoji, WikiLink, Embed, BlockRef, InlineURL, HashTag], {
-    props: [
-        styleTags({
-            'TableDelimiter SubscriptMark SuperscriptMark StrikethroughMark': t.processingInstruction,
-            'TableHeader/...': t.heading,
-            'Strikethrough/...': t.strikethrough,
-            TaskMarker: t.atom,
-            Task: t.list,
-            Emoji: t.character,
-            'Subscript Superscript': t.special(t.content),
-            TableCell: t.content
-        })
-    ]
-}]
+export const extensions = [
+    GFM, Subscript, Superscript, Emoji, WikiLink, Embed, BlockRef, InlineURL, HashTag, BlockId,
+    {
+        props: [
+            styleTags({
+                'TableDelimiter SubscriptMark SuperscriptMark StrikethroughMark': t.processingInstruction,
+                'TableHeader/...': t.heading,
+                'Strikethrough/...': t.strikethrough,
+                TaskMarker: t.atom,
+                Task: t.list,
+                Emoji: t.character,
+                'Subscript Superscript': t.special(t.content),
+                TableCell: t.content
+            })
+        ]
+    }]
 
 
 export const whalerust_parser = parser.configure(extensions)
