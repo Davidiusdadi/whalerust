@@ -16,7 +16,7 @@ export default function loadRoamData(source: Source, roam_raw_data: string): Fil
         return new File({
                 source,
                 name: `${p.title}.md`,
-                content: '# ' + p.title + '\n' + (p.children?.map(map_child).join('') ?? ''),
+                content: '# ' + p.title + '\n' + (p.children?.map((c) => map_child(c)).join('') ?? ''),
                 date: Number(p.edit_time)
             }
         )
