@@ -1,5 +1,5 @@
 import { Source } from 'src/db/file_source'
-import { file, files, loadFromSource, manifestFile, systemActionViewPage } from 'src/store/core'
+import { file, files, loadFromSource, systemActionViewPage } from 'src/store/core'
 import { fetchUrl } from 'src/store/io'
 
 interface SessionManagerStore {
@@ -59,35 +59,34 @@ const session_manager = {
 
         let recall_progress = 0
 
-        const unsub_files = files.subscribe((files) => {
-            if (files.length > 0) {
-
-                const nav_loc = getNavLocation()
-                if (nav_loc.vault && nav_loc.page) {
-                    const file = files.find(f => f.source.full_url === nav_loc.vault && f.name_short === nav_loc.page)
-                    if (file) {
-                        systemActionViewPage(file)
-                        unsub_files()
-                        return
-                    } else {
-                        console.log('location not found.')
-                    }
-                }
-
-                if (recall_progress === store.locations.length) {
-                    if (files.length > 0) {
-                        console.log('opening first page')
-                        systemActionViewPage(files[0])
-                    }
-                    unsub_files()
-                }
-            }
-        })
 
         for (const url of store.locations) {
             recall_progress++
             this.recall(url)
         }
+
+
+        if (files.length > 0) {
+            const nav_loc = getNavLocation()
+            if (nav_loc.vault && nav_loc.page) {
+                const file = files.find(f => f.source.full_url === nav_loc.vault && f.name_short === nav_loc.page)
+                if (file) {
+                    systemActionViewPage(file)
+                    return
+                } else {
+                    console.log('location not found.')
+                }
+            }
+
+            if (recall_progress === store.locations.length) {
+                if (files.length > 0) {
+                    console.log('opening first page')
+                    systemActionViewPage(files[0])
+                }
+            }
+        }
+
+
     },
     recall(uri: string) {
         const log = (str: string) => console.log(`recalling: ${uri} (${str})`)

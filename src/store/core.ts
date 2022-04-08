@@ -5,13 +5,9 @@ import type { Source } from 'src/db/file_source'
 import session_manager from 'src/store/session_manager'
 import type { EditorViewMode } from 'src/lang/editor'
 
-
-let update_files: (files: File[]) => void = () => undefined
 let update_file: (files: File | null) => void = () => undefined
 
-export const files = readable([] as File[], set => {
-    update_files = set
-})
+export let files: File[] = []
 
 export const file = readable<File | null>(null, set => {
     update_file = set
@@ -27,25 +23,23 @@ export function loadFromSource(source: Source) {
         return b.date - a.date // desc
     })
     new_files.forEach((f) => index.addFile(f))
-    update_files(new_files)
+    files = files.concat(...new_files)
 
     // 4 debug purposes
-    ;(window as any).files = get(files)  // eslint-disable-line
+    ;(window as any).files = new_files  // eslint-disable-line
     ;(window as any).index = index // eslint-disable-line
 }
 
 
 export function manifestFile(source: Source, name: string) {
-    const _files = get(files)
-    let file = _files.find((f) => f.name_short === name)
+    let file = files.find((f) => f.name_short === name)
     if (!file) { // lazy manifest page
         file = new File({
             source,
             name: `${name}.md`,
             content: `# ${name}\n\n\n\n`
         })
-        _files.push(file)
-        update_files(_files)
+        files.push(file)
         index.addFile(file)
     }
     return file
