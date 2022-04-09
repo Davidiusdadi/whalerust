@@ -1,10 +1,12 @@
 <script lang='ts'>
     import { onDestroy, onMount } from 'svelte'
     import type { File } from 'src/db/file'
-    import Editor, { editor_modes } from '../lang/editor'
+    import { editor_modes, wrBasicSetup } from '../lang/editor'
     import type { Index } from 'src/db/indexer'
     import { editor_view_mode, manifestFile, userActionViewPage } from 'src/store/core'
     import { get } from 'svelte/store'
+    import { Compartment } from '@codemirror/state'
+    import type { WREditorView } from 'src/lang/view'
 
     export let file: File
     export let index: Index
@@ -14,7 +16,10 @@
     }
 
     let editor_div: HTMLDivElement
-    let editor_data: ReturnType<typeof Editor>
+    let editor_data: {
+        editor: WREditorView
+        compartment: Compartment
+    }
 
     const backrefs = index.getBackLinks(file)
     let editor_container: HTMLElement
@@ -30,11 +35,20 @@
             )]
         })
     })
-    onDestroy(unsub_editor_view_mode)
+    onDestroy(() => {
+        unsub_editor_view_mode()
+        editor_data.editor.disconnect()
+    })
 
     onMount(() => {
-        const extension = editor_modes[get(editor_view_mode)]()
-        editor_data = Editor(editor_div, file.content, extension)
+        const compartment = new Compartment
+        const extensions = compartment.of(editor_modes[get(editor_view_mode)]())
+        const editor = file.giveC6(editor_div, [wrBasicSetup, extensions])
+
+        editor_data = {
+            editor,
+            compartment
+        }
 
         editor_container.addEventListener('click', (e) => {
             console.log('click event: ', e)
@@ -50,7 +64,6 @@
                         x_data_target = t.parentElement.getAttribute('x-data-target')
                     }
                 }
-
 
                 if (x_data_target) {
                     console.log(`click on ${x_data_target}`)

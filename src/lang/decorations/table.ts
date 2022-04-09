@@ -1,11 +1,12 @@
 import { EditorView, Decoration, DecorationSet, Range, WidgetType } from '@codemirror/view'
-import { StateField, StateEffect, EditorSelection } from '@codemirror/state'
-import { ensureSyntaxTree, syntaxParserRunning, syntaxTree, syntaxTreeAvailable } from '@codemirror/language'
+import { StateField, EditorSelection } from '@codemirror/state'
+import { syntaxTree } from '@codemirror/language'
 import HTMLElem from 'src/lang/decorations/GenericWIdget'
 import type { SyntaxNode } from '@lezer/common/dist/tree'
 import type { EditorState } from '@codemirror/basic-setup'
-import Editor, { editor_modes } from 'src/lang/editor'
+import { editor_modes } from 'src/lang/editor'
 import type { NodeType } from '@lezer/common/dist/tree'
+import { giveC6 } from 'src/lang/view'
 
 type ReplaceDecorationSpec = Parameters<(typeof Decoration)['replace']>[0]
 
@@ -20,13 +21,16 @@ function createTableWidget(s: EditorState, on_focus: (w: WidgetType, view: Edito
                 const table = Decoration.replace({
                     widget: new HTMLElem('table', (t, w, view) => {
                         t.addEventListener('click', () => on_focus(w, view))
-
                         const t_h = sy.firstChild!
                         const process_cell = (node: SyntaxNode, el: 'td' | 'th') => {
                             if (node.type.name === 'TableCell') {
                                 const cell = document.createElement(el)
-
-                                Editor(cell, s.doc.sliceString(node.from, node.to), editor_modes['table_cell'](), [])
+                                giveC6({
+                                    elem: cell,
+                                    view_pool: [],
+                                    doc: s.doc.sliceString(node.from, node.to),
+                                    extensions: editor_modes['table_cell']()
+                                })
                                 return cell
                             }
                             return null

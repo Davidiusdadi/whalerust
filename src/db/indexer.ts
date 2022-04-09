@@ -31,12 +31,12 @@ export class Index {
 
     addFile(file: File) {
         this.pages.add(file)
-        const tree = whalerust_parser.parse(file.content)
+        const tree = whalerust_parser.parse(file.content())
         const tc = tree.fullCursor()
 
         while (tc.next(true)) {
             if (tc.name === NodeNames.WikiLink) {
-                const link_to = file.content.slice(tc.from + 2, tc.to - 2) // cutting away the brackets [[link_to]]
+                const link_to = file.content().slice(tc.from + 2, tc.to - 2) // cutting away the brackets [[link_to]]
                 this.page_refs.add(new FileRef(file.name_short, link_to))
             }
         }

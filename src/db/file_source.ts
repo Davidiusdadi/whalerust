@@ -31,7 +31,7 @@ export class Source {
         } else if (this.name.toLowerCase().endsWith('.md')) {
 
             const res = loadMdData(this, this.name, c)
-            this.content_raw = () => res[0].content
+            this.content_raw = () => c
             this.files = res
         } else {
             throw Error(`no loader for: ${this.name}`)

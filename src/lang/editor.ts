@@ -39,7 +39,7 @@ const myHighlightStyle = HighlightStyle.define([
     { tag: tags.emphasis, 'font-style': 'italic' }
 ])
 
-const basicSetup = [
+export const wrBasicSetup = [
     //lineNumbers(),
     //highlightActiveLineGutter(),
     //highlightSpecialChars(),
@@ -98,25 +98,3 @@ export const editor_modes = {
 }
 
 export type EditorViewMode = keyof typeof editor_modes;
-
-
-export default (editor_div: Element, content: string, extenison: Extension[], base = basicSetup) => {
-
-    const compartment = new Compartment
-    const extensions: Extension[] = [
-        base,
-        compartment.of(extenison)
-    ]
-
-    const editor = new EditorView({
-        state: EditorState.create({
-            doc: content,
-            extensions
-        }),
-        parent: editor_div
-    })
-    return {
-        editor,
-        compartment
-    }
-}
