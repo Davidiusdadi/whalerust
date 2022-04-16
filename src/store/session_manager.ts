@@ -37,7 +37,7 @@ let store: SessionManagerStore = {
 }
 
 const session_manager = {
-    boot() {
+   async boot() {
 
         file.subscribe((file) => {
             if (file) {
@@ -62,7 +62,7 @@ const session_manager = {
 
         for (const url of store.locations) {
             recall_progress++
-            this.recall(url)
+            await this.recall(url)
         }
 
 
@@ -88,13 +88,13 @@ const session_manager = {
 
 
     },
-    recall(uri: string) {
+    async recall(uri: string) {
         const log = (str: string) => console.log(`recalling: ${uri} (${str})`)
         const content = localStorage.getItem(`${localStorage_keys.raw_content}_${uri}`)
         const source = new Source(uri)
         if (!source.local) {
             log('fetching')
-            void fetchUrl(source.full_url).catch(e => {
+            await fetchUrl(source.full_url).catch(e => {
                 if (content) {
                     log('falling back to cache')
                     loadFromSource(source.initRawContent(content))
