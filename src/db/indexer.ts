@@ -11,11 +11,21 @@ class FileRef {
     }
 }
 
+interface BlockRef {
+    file: File
+    from: number
+    to: number
+}
+
 export class Index {
     page_refs: Set<FileRef> = new Set<FileRef>()
     pages: Set<File> = new Set<File>()
+    block_refs: {
+        [ref: string]: BlockRef
+    } = {}
 
     constructor() {
+        //
     }
 
     getBackLinks(file: File) {
@@ -31,13 +41,22 @@ export class Index {
 
     addFile(file: File) {
         this.pages.add(file)
-        const tree = whalerust_parser.parse(file.content())
+        const content = file.content()
+        const tree = whalerust_parser.parse(content)
         const tc = tree.fullCursor()
 
         while (tc.next(true)) {
             if (tc.name === NodeNames.WikiLink) {
                 const link_to = file.content().slice(tc.from + 2, tc.to - 2) // cutting away the brackets [[link_to]]
                 this.page_refs.add(new FileRef(file.name_short, link_to))
+            } else if (tc.name === NodeNames.BlockIdValue) {
+                const block_id = content.slice(tc.from, tc.to)
+                const block = tc.node.parent!.parent!
+                this.block_refs[block_id] = {
+                    file,
+                    from: block.from,
+                    to: block.to
+                }
             }
         }
     }
