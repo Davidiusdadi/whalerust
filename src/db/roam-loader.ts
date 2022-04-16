@@ -24,14 +24,14 @@ export default function loadRoamData(source: Source, roam_raw_data: string): Fil
             ref_id = ` ^${b.uid}`
         }
         const own = `${' '.repeat(level * tabSize)}- ${b.string}${ref_id}\n`
-        return own + (b.children?.map((c) => map_child(c, level + 1)).join('\n') ?? '')
+        return own + (b.children?.map((c) => map_child(c, level + 1)).join('') ?? '')
     }
 
     return pages.map(p => {
         return new File({
                 source,
                 name: `${p.title}.md`,
-                content: '# ' + p.title + '\n' + (p.children?.map((c) => map_child(c)).join('') ?? ''),
+                content: '# ' + p.title + '\n' + (p.children?.map((c) => map_child(c)).join('\n') ?? ''),
                 date: Number(p.edit_time)
             }
         )
