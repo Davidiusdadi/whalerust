@@ -25,16 +25,22 @@ body, html {
 }
 
 .ͼ4 .cm-line {
-    padding: 4px 2px 4px 2px !important;
+    padding: 4px 2px 4px 2px;
+}
+
+[wp-list-mark] > span {
+    color: rgba(0, 0, 0, 0) !important;
 }
 
 [wp-list-mark] {
     margin-left: -16px;
+    position: relative;
 }
 
 [wp-list-mark]:before {
     content: attr(wp-list-mark);
-
+    position: relative;
+    left: 10px;
 }
 
 @tailwind base;

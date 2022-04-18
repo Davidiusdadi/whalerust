@@ -109,15 +109,15 @@ export default ((view: EditorView) => {
 
                     let mark = Decoration.widget({
                         widget: new IndentStripes(depth, 'wp-skip-first'),
-                        side: -1
+                        side: 1
                     }).range(from)
                     mark.value.startSide = -2
                     range.push(mark)
 
-                    mark = Decoration.replace({
-                        widget: new HTMLElem('span', (e) => {
-                            e.setAttribute('wp-list-mark', indent_style(doc.sliceString(from, to)))
-                        })
+                    mark = Decoration.mark({
+                        attributes: {
+                            'wp-list-mark': indent_style(doc.sliceString(from, to))
+                        }
                     }).range(from, to)
                     mark.value.startSide = -1
                     range.push(mark)
