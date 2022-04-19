@@ -23,7 +23,18 @@ export default function loadRoamData(source: Source, roam_raw_data: string): Fil
         if (block_refs.has(b.uid)) {
             ref_id = ` ^${b.uid}`
         }
-        const own = `${' '.repeat(level * tabSize)}- ${b.string}${ref_id}\n`
+
+        let content = b.string // not yet prefixed with list-mark
+
+        const indent = ' '.repeat(level * tabSize)
+        { // convert multi line quotes
+            if (content.match(/\s*>/) !== null) {
+                content = content.replace(/\n/, `\n${indent}>`)
+            }
+        }
+
+
+        const own = `${indent}- ${content}${ref_id}\n`
         return own + (b.children?.map((c) => map_child(c, level + 1)).join('') ?? '')
     }
 
