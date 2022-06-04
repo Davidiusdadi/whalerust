@@ -11,7 +11,6 @@ export default ((view: EditorView) => {
                     tagName: 'sup',
                     class: 'wr-BlockId'
                 }).range(from, to)
-                mark.value.startSide = 1
                 return [mark]
             }
         }

@@ -100,7 +100,6 @@ const BlockId = {
                 const elts = [cx.elt('BlockIdMark', pos, pos + 1)]
                 let eof_mark_found = false
                 let eof_mark = pos + 1
-                console.log('BlockId canditate:', cx.text)
                 for (let i = pos + 1; ; i++) {
                     const next = cx.char(i)
 

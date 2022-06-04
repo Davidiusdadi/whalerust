@@ -26,13 +26,15 @@ import type { Extension } from '@codemirror/state'
 import { Compartment } from '@codemirror/state'
 import { table_marker } from 'src/lang/decorations/table'
 import { index } from 'src/store/core'
+import BlockIdShow from 'src/lang/decorations/consistent/BlockId'
+import BlockRef from 'src/lang/decorations/ephemeral/BlockRef'
 
-const markdown_lang = markdown({
+export const markdown_lang = markdown({
     base: commonmarkLanguage,
     extensions: markdown_extensions
 })
 
-const myHighlightStyle = HighlightStyle.define([
+export const markdown_code_highlights = HighlightStyle.define([
     { tag: tags.processingInstruction, 'color': 'gray', opacity: '0.5' },
     { tag: tags.link, 'color': '#0077be' },
     { tag: tags.strong, 'font-weight': 'bold' },
@@ -46,7 +48,7 @@ export const wrBasicSetup = [
     history(),
     //foldGutter(),
     drawSelection(),
-    dropCursor(),
+    //dropCursor(),
     EditorState.allowMultipleSelections.of(false),
     indentOnInput(),
     classHighlightStyle,
@@ -72,29 +74,41 @@ export const wrBasicSetup = [
     EditorState.tabSize.of(tabSize),
     keymap.of([indentWithTab]),
     markdown_lang,
-    myHighlightStyle
+    markdown_code_highlights
 ]
 
 export const editor_modes = {
+    completion:() => [
+        autocompletion({
+            override: [
+                completion(index).wiki_complete
+            ]
+        })
+    ],
     table_cell: () => [
         markdown_lang,
-        myHighlightStyle,
-        EmphemeralPlugin,
+        markdown_code_highlights,
+        EmphemeralPlugin([BlockIdShow]),
         ConsistentPlugin
-    ],
+    ] as Extension[],
     fancy: () => {
         return [
-            autocompletion({
-                override: [
-                    completion(index).wiki_complete
-                ]
-            }),
-            EmphemeralPlugin,
+            editor_modes.completion(),
+            EmphemeralPlugin([BlockIdShow, BlockRef]),
             ConsistentPlugin,
-            table_marker()
+            table_marker(),
         ] as Extension[]
     },
-    plain: () => [] as Extension[]
+    block_embed: () => {
+        const ext: Extension[] =  [
+            // wrBasicSetup,
+            // editor_modes.completion(),
+            EmphemeralPlugin([]),
+            ConsistentPlugin,
+        ]
+        return ext
+    },
+    plain: () => [editor_modes.completion()] as Extension[]
 }
 
 export type EditorViewMode = keyof typeof editor_modes;

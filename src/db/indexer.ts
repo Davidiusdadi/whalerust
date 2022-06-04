@@ -11,10 +11,16 @@ class FileRef {
     }
 }
 
+/** Describes block that is referencable as it has an id https://help.obsidian.md/How+to/Link+to+blocks */
 interface BlockRef {
+    /** The file in which this referenable block can be founc  */
     file: File
+    /** start of the block */
     from: number
+    /** eof of the block */
     to: number
+     /** eof of the block yet w/o the trailing block-id*/
+    to_wo_ref: number
 }
 
 export class Index {
@@ -55,7 +61,8 @@ export class Index {
                 this.block_refs[block_id] = {
                     file,
                     from: block.from,
-                    to: block.to
+                    to: block.to,
+                    to_wo_ref: tc.node.prevSibling!.from - 1 // cut off space and ^
                 }
             }
         }

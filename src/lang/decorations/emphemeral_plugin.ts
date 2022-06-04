@@ -14,7 +14,7 @@ import type { SelectionRange } from '@codemirror/state'
 /**
  * Disables decorations when they come in contact with the cursor
  **/
-export const EmphemeralPlugin = ViewPlugin.fromClass(class EmphemeralPluginCLS implements PluginValue {
+export const EmphemeralPlugin = (decorators: SyntaxTreeDecorationDefinition[]) => ViewPlugin.fromClass(class EmphemeralPluginCLS implements PluginValue {
     decorators: SyntaxTreeDecorationDefinition[] = [
         anchor_and_image_decorator,
         CodeMark,
@@ -22,7 +22,8 @@ export const EmphemeralPlugin = ViewPlugin.fromClass(class EmphemeralPluginCLS i
         HeaderMark,
         HorizontalRule,
         list_as_block,
-        StrongEmphasis
+        StrongEmphasis,
+        ...decorators
     ]
 
     deco: EmphemeralDecorationSet

@@ -167,3 +167,13 @@ body, html {
 table, th, td {
     border: 1px solid;
 }
+
+.wp-cm-embed * {
+    text-decoration: underline;
+}
+
+.wp-cm-embed, .wp-cm-embed div {
+    display: inline-block !important;
+    padding: 0;
+    margin: 0;
+}

@@ -20,6 +20,7 @@ export function giveC6({ elem, view_pool, doc, extensions }: {
     const dispatch = (tr: Transaction) => {
         const who_anno = tr.annotation(syncAnnotation)
         own_view.update([tr])
+        return // disable editor syncing (as it is currently buggy)
         if (!who_anno) {
             if (tr.changes.empty) {
                 return
